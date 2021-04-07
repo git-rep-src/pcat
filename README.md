@@ -1,6 +1,6 @@
 # PCAT
 
-An extension of Ncat for pentesters. It preserves all the features of Ncat and adds new ones divided into two groups.
+An extension of Ncat for pentesters. It preserves all the features of Ncat and adds new ones, divided into two groups:
 
 * **Pre**: work in progress.
 * **Post**: enumeration, exploit manager and privilege escalation vector checking on Unix/Windows systems.
@@ -15,10 +15,9 @@ libxml2
 ```
 ```shell
 ./configure
-make
+make # BSD: use gmake instead of make.
 sudo make install
 
-# BSD: use gmake instead of make.
 # Windows: work in progress.
 ```
 ## USAGE
@@ -104,6 +103,6 @@ Usage: post <option> <arguments>
 ```
 Demo: [https://streamable.com/oas5v](https://streamable.com/oas5v)
 
-Pcat is based on source code: [Ncat](https://github.com/nmap/nmap)
+Pcat is based on source code of [Ncat](https://github.com/nmap/nmap)
 
-Pcat use Linux exploit list: [Linux Exploit Suggester](https://github.com/mzet-/linux-exploit-suggester)
+Pcat use Linux exploits list of [Linux Exploit Suggester](https://github.com/mzet-/linux-exploit-suggester)
