@@ -1,6 +1,8 @@
 # PCAT
 
-An extension of Ncat for pentesters. It preserves all the features of Ncat and adds new ones, divided into two groups:
+An extension of Ncat for pentesters.
+
+It preserves all the features of Ncat and adds new ones, divided into two groups:
 
 * **Pre**: work in progress.
 * **Post**: enumeration, exploit manager and privilege escalation vector checking on Unix/Windows systems.
@@ -15,9 +17,10 @@ libxml2
 ```
 ```shell
 ./configure
-make # BSD: use gmake instead of make.
+make
 sudo make install
 
+# BSD: use gmake instead of make.
 # Windows: work in progress.
 ```
 ## USAGE
