@@ -1,0 +1,7 @@
+PCAT_PATH=../../../..
+if [ -a "$PCAT_PATH/pcat" ]
+  then
+	for addr in `cat iplist`; do $PCAT_PATH/pcat --disable-eof-exit $addr 80 < get.request; done;
+else
+	echo "Pcat is not buit. Please build Pcat before you use these scripts";
+fi

@@ -1,0 +1,31 @@
+$ProgressPreference = "SilentlyContinue"
+$OuputEncoding = [Text.UTF8Encoding]::UTF8
+$global:BUF = ""
+$RET = ""
+$PSV = ([int]$PsVersionTable.PsVersion.Major) 
+function xml()
+{
+    if ($args[0] -eq "OPEN") {
+        $global:BUF += "<" + $args[1] + ">"
+    } elseif ($args[0] -eq "CLOSE") {
+        $global:BUF += "</" + $args[1] + ">"
+    } else {
+        $global:BUF += "<" + $args[0] + ">" + $args[1] + "</" + $args[0] + ">"
+    }
+}
+if ($PSV -ne "" -and $PSV -ne $null -and $PSV -gt 2 -and $? -eq "True") {
+    $RET = ((Get-CimInstance Win32_LoggedOnUser).Antecedent.Name | Select-Object -Unique | Foreach-Object {"<NAME>$_</NAME>"} | Out-String)
+    if ($RET -ne "" -and $RET -ne $null -and $? -eq "True") {
+        xml "LOGGED-ON" $RET
+    } else {
+        xml "OPEN" "LOGGED-ON"
+        xml "NONE" "N/A"
+        xml "CLOSE" "LOGGED-ON"
+    }
+} else {
+    xml "OPEN" "NULL"
+    xml "NONE" "Powershell is not installed or version is not compatible"
+    xml "CLOSE" "NULL"
+}
+xml "CLOSE" "DATA"
+echo "$BUF [POST-EOS]"

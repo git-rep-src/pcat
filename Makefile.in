@@ -1,0 +1,250 @@
+# Makefile.in generated automatically by automake 1.4-p6 from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# Pcat Makefile
+
+SHELL = @SHELL@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+datarootdir = @datarootdir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+top_builddir = .
+
+pkgdatadir = $(datadir)/pcat
+
+INSTALL = @INSTALL@
+transform = @program_transform_name@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+sbindir = @sbindir@
+mandir = @mandir@
+srcdir = @srcdir@
+
+CC = @CC@
+CPPFLAGS = @CPPFLAGS@
+CFLAGS = @CFLAGS@ `xml2-config --cflags`
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@ `xml2-config --libs`
+DEFS = @DEFS@ -DPCAT_DATADIR="\"$(pkgdatadir)\""
+# With GCC, add extra security checks to source code.
+DEFS += -D_FORTIFY_SOURCE=2
+RM = rm -f
+STRIP = @STRIP@
+
+LIBNBASEDIR = libs/nbase
+NBASE_INC = $(LIBNBASEDIR)
+NBASE_LIBS = $(LIBNBASEDIR)/libnbase.a
+LIBNSOCKDIR = libs/nsock
+NSOCK_INC = $(LIBNSOCKDIR)/include
+NSOCK_LIBS = $(LIBNSOCKDIR)/src/libnsock.a
+LIBPCAPDIR = @LIBPCAPDIR@
+PCAP_LIBS = @PCAP_LIBS@
+LIBLUADIR = @LIBLUADIR@
+LUA_CFLAGS = @LUA_CFLAGS@
+NOLUA = @NOLUA@
+OPENSSL_LIBS = @OPENSSL_LIBS@
+HAVE_OPENSSL = @HAVE_OPENSSL@
+
+CPPFLAGS += $(DEFS) $(INCLS)
+INCLS = -I. -I$(NBASE_INC) -I$(NSOCK_INC)
+
+SHTOOL = ./shtool
+
+# DESTDIR can be used by package maintainers to install Pcat under its
+# usual directory structure into a different tree.
+DESTDIR =
+
+POSTDIRS = $(pkgdatadir)/post/docs $(pkgdatadir)/post/exploits $(pkgdatadir)/post/scripts/unix/show $(pkgdatadir)/post/scripts/unix/run $(pkgdatadir)/post/scripts/unix/pull $(pkgdatadir)/post/scripts/windows/show $(pkgdatadir)/post/scripts/windows/run $(pkgdatadir)/post/scripts/windows/pull
+
+SRCS = src/pcat_main.c src/pcat_connect.c src/pcat_core.c src/pcat_posix.c src/pcat_listen.c src/pcat_proxy.c src/pcat_ssl.c src/base64.c src/http.c src/util.c src/sys_wrap.c src/common.c src/file.c src/conv.c src/set.c src/post/post_input.c src/post/post_show.c src/post/post_run.c src/post/post_pull.c src/post/post_doc.c src/post/post_output.c src/post/post_parse.c src/post/post_cache.c 
+OBJS = src/pcat_main.o src/pcat_connect.o src/pcat_core.o src/pcat_posix.o src/pcat_listen.o src/pcat_proxy.o src/pcat_ssl.o src/base64.o src/http.o src/util.o src/sys_wrap.o src/common.o src/file.o src/conv.o src/set.o src/post/post_input.o src/post/post_show.o src/post/post_run.o src/post/post_pull.o src/post/post_doc.o src/post/post_output.o src/post/post_parse.o src/post/post_cache.o 
+DATAFILES =
+
+ifneq ($(NOLUA),yes)
+LUA_SRCS = src/pcat_lua.c
+LUA_OBJS = src/pcat_lua.o
+LUA_LIBS = @LIBLUA_LIBS@ -lm
+LUA_CFLAGS += -DHAVE_LUA=1 -Ilibs/liblua
+else
+LUA_SRCS =
+LUA_OBJS =
+LUA_LIBS =
+LUA_CFLAGS =
+endif
+
+SRCS += $(LUA_SRCS)
+OBJS += $(LUA_OBJS)
+
+ifneq ($(HAVE_OPENSSL),)
+SRCS += src/http_digest.c
+OBJS += src/http_digest.o
+DATAFILES = certs/ca-bundle.crt
+endif
+
+TARGET = pcat
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES = $(CONFIG_HEADER) config.cache config.log config.status
+
+TEST_PROGS = test/addrset test/test-uri test/test-cmdline-split
+ifneq ($(HAVE_OPENSSL),)
+TEST_PROGS += test/test-wildcard
+endif
+
+all: $(TARGET)
+
+.NOTPARALLEL:
+
+$(NBASE_LIBS): build-nbase
+
+build-nbase: $(LIBNBASEDIR)
+	@echo Compiling libnbase;
+	cd $(LIBNBASEDIR) && ./configure && $(MAKE)
+
+$(NSOCK_LIBS): build-nsock
+
+build-nsock: $(LIBNSOCKDIR)/src
+	@echo Compiling libnsock;
+	cd $(LIBNSOCKDIR)/src && ./configure && $(MAKE)
+
+$(LIBPCAPDIR)/libpcap.a: @PCAP_BUILD@
+
+build-pcap: $(LIBPCAPDIR)
+	@echo Compiling libpcap;
+	cd $(LIBPCAPDIR) && ./configure && $(MAKE)
+
+$(LIBLUADIR)/liblua.a: @LUA_BUILD@
+
+build-lua: $(LIBLUADIR)/Makefile
+	@echo Compiling liblua; cd $(LIBLUADIR) && $(MAKE) liblua.a CC="$(CC)" MYCFLAGS="$(CFLAGS) $(LUA_CFLAGS)"
+
+$(TARGET): $(NBASE_LIBS) $(NSOCK_LIBS) @PCAP_DEPENDS@ @LUA_DEPENDS@ $(OBJS)
+	$(CC) -o $@ $(CFLAGS) $(lua_cflags) $(LDFLAGS) $(OBJS) $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
+
+%.o: %.c
+	$(CC) $(CPPFLAGS) $(LUA_CFLAGS) $(CFLAGS) -c $< -o $@
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+
+$(srcdir)/configure: $(srcdir)/configure.ac $(CONFIGURE_DEPENDENCIES)
+	cd $(srcdir) && autoconf
+
+config.h:
+	@if test ! -f config.h; then \
+		cd $(top_builddir) && CONFIG_FILES= CONFIG_HEADERS=config.h \
+		        $(SHELL) ./config.status; \
+	fi
+
+test/addrset: test/addrset.o src/pcat_core.o src/sys_wrap.o src/util.o src/pcat_posix.o $(LUA_OBJS) @LUA_DEPENDS@
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
+
+test/test-uri: test/test-uri.o src/base64.o src/http.o src/pcat_core.o src/sys_wrap.o src/util.o src/pcat_posix.o $(LUA_OBJS) @LUA_DEPENDS@
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
+
+test/test-cmdline-split: test/test-cmdline-split.o src/pcat_posix.o src/pcat_core.o src/sys_wrap.o src/util.o $(LUA_OBJS) @LUA_DEPENDS@
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
+
+test/test-wildcard: test/test-wildcard.o src/pcat_core.o src/pcat_ssl.o src/sys_wrap.o src/util.o src/pcat_posix.o $(LUA_OBJS) @LUA_DEPENDS@
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
+
+.PHONY: uninstall all clean distclean build-nbase build-nsock build-pcap build-lua
+
+install: $(TARGET)
+	@echo Installing Pcat;
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir) $(DESTDIR)$(mandir)/man1
+	$(INSTALL) -c -m 755 pcat $(DESTDIR)$(bindir)/pcat
+	$(STRIP) -x $(DESTDIR)$(bindir)/pcat
+	if [ -n "$(DATAFILES)" ]; then \
+		$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(pkgdatadir); \
+		$(INSTALL) -c -m 644 $(DATAFILES) $(DESTDIR)$(pkgdatadir)/; \
+	fi
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(POSTDIRS);
+	$(INSTALL) -c -m 644 post/docs/* $(DESTDIR)$(pkgdatadir)/post/docs/;
+	$(INSTALL) -c -m 644 post/scripts/unix/show/* $(DESTDIR)$(pkgdatadir)/post/scripts/unix/show/;
+	$(INSTALL) -c -m 644 post/scripts/unix/run/* $(DESTDIR)$(pkgdatadir)/post/scripts/unix/run/;
+	$(INSTALL) -c -m 644 post/scripts/unix/pull/* $(DESTDIR)$(pkgdatadir)/post/scripts/unix/pull/;
+	$(INSTALL) -c -m 644 post/scripts/windows/show/* $(DESTDIR)$(pkgdatadir)/post/scripts/windows/show/;
+	$(INSTALL) -c -m 644 post/scripts/windows/run/* $(DESTDIR)$(pkgdatadir)/post/scripts/windows/run/;
+	$(INSTALL) -c -m 644 post/scripts/windows/pull/* $(DESTDIR)$(pkgdatadir)/post/scripts/windows/pull/;
+	$(INSTALL) -c -m 644 post/exploits/* $(DESTDIR)$(pkgdatadir)/post/exploits/;
+	$(INSTALL) -c -m 644 docs/$(TARGET).1 $(DESTDIR)$(mandir)/man1/$(TARGET).1
+
+uninstall:
+	@echo Uninstalling Pcat;
+	$(RM) -f $(DESTDIR)$(bindir)/$(TARGET)
+	$(RM) -f $(DESTDIR)$(mandir)/man1/$(TARGET).1
+	$(RM) -rf $(DESTDIR)$(pkgdatadir)/
+
+clean-pcat:
+	$(RM) -f src/*.o test/*.o $(TARGET) $(TEST_PROGS)
+
+clean: clean-pcat clean-nbase clean-nsock @PCAP_CLEAN@ @LUA_CLEAN@
+
+clean-nbase:
+	-cd $(LIBNBASEDIR) && $(MAKE) clean
+
+distclean-nbase:
+	-cd $(LIBNBASEDIR) && $(MAKE) clean
+
+clean-nsock:
+	-cd $(LIBNSOCKDIR)/src && $(MAKE) clean
+
+distclean-nsock:
+	-cd $(LIBNSOCKDIR)/src && $(MAKE) clean
+
+clean-pcap:
+	-cd $(LIBPCAPDIR) && $(MAKE) clean
+
+distclean-pcap:
+	-cd $(LIBPCAPDIR) && $(MAKE) clean
+
+clean-lua:
+	-cd $(LIBLUADIR) && $(MAKE) clean
+
+distclean-lua:
+	-cd $(LIBLUADIR) && $(MAKE) clean
+
+distclean: clean distclean-nbase distclean-nsock @PCAP_DIST_CLEAN@ @LUA_DIST_CLEAN@
+	-rm -f Makefile makefile.dep $(CONFIG_CLEAN_FILES)
+
+TESTS = ./test-addrset.sh ./test-cmdline-split ./test-uri
+ifneq ($(HAVE_OPENSSL),)
+TESTS += ./test-wildcard
+endif
+
+check: $(TARGET) $(TEST_PROGS)
+	cd test && ($(addsuffix &&,$(TESTS)) echo "All tests passed.")
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
+
+makefile.dep:
+	$(CC) -MM $(CPPFLAGS) $(SRCS) > $@
+-include makefile.dep
+

