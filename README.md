@@ -1,6 +1,6 @@
 # PCAT
 
-An extension of Ncat for pentesters.
+An extension of Ncat for pentesters: [video](https://streamable.com/oas5v)
 
 It preserves all the features of Ncat and adds new ones, divided into two groups:
 
@@ -95,17 +95,15 @@ post help
 
 Usage: post <option> <arguments>
 
-  set  os (bsd|linux|windows)                      Set remote operating system.
-  show (system|users|process|network|pe|exploits)  Show information.
-  run  tty                                         Spawn TTY shell.
-  pull (tools|exploits) <dir>                      Download and install package.
-  doc  (iptables|ssh|sql|pe)                       Show cheatsheet.
-  help                                             Show help.
+  set  os [bsd|linux|windows]                        set remote operating system
+  show [system|users|process|network|pe|exploits]    show information
+  run  tty                                           spawn tty shell
+  pull [tools|exploits] <dir>                        download and install package
+  doc  [iptables|ssh|sql|pe]                         show cheatsheet
+  help                                               show help
 
-  Windows: cmd shell is mandatory.
+  windows: cmd shell is mandatory
 ```
-Demo: [https://streamable.com/oas5v](https://streamable.com/oas5v)
-
 Pcat is based on source code of [Ncat](https://github.com/nmap/nmap)
 
 Pcat use Linux exploits list of [Linux Exploit Suggester](https://github.com/mzet-/linux-exploit-suggester)
