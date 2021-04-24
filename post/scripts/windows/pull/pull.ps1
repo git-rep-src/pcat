@@ -33,11 +33,11 @@ xml "OPEN" "DATA name='pull'"
 if ($PSV -ne "" -and $PSV -ne $null -and $PSV -gt 2 -and $? -eq "True") {
     xml "OPEN" "PULL"
     if ($NAME -like "tools") {
-        $URL="https://file-examples-com.github.io/uploads/2017/02/zip_2MB.zip"
+        $URL="https://github.com/git-rep-src/pcat-packages/blob/master/tools/windows/tools.zip?raw=true"
     } else {
-        $URL="https://file-examples-com.github.io/uploads/2017/02/zip_2MB.zip"
+        $URL="https://github.com/git-rep-src/pcat-packages/blob/master/exploits/windows/exploits.zip?raw=true"
     }
-    $(Invoke-WebRequest -UseBasicParsing -Uri $URL -OutFile $FILE)
+    $(Invoke-WebRequest -UseBasicParsing -MaximumRedirection 100 -Uri $URL -OutFile $FILE)
     if ($? -eq "True") {
         $(unzip $FILE $DIR) 
         if ($? -eq "True") {

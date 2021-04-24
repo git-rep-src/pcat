@@ -15,9 +15,9 @@ xml "OPEN" "DATA name='pull'"
 xml "OPEN" "PULL"
 if [ "$1" = "bsd" ]; then
     if [ "$2" = "tools" ]; then
-        URL="https://dev-files.blender.org/file/download/bwdp5reejwpkuh5i2oak/PHID-FILE-nui3bpuan4wdvd7yzjrs/sample.tar.gz"
+        URL=""
     else
-        URL="https://dev-files.blender.org/file/download/bwdp5reejwpkuh5i2oak/PHID-FILE-nui3bpuan4wdvd7yzjrs/sample.tar.gz"
+        URL=""
     fi
     $(fetch --no-verify-peer --no-verify-hostname -qo- "$URL" 2>/dev/null | tar -xzf- -C "$3")
     if [ $? -eq 0 ]; then
@@ -25,15 +25,15 @@ if [ "$1" = "bsd" ]; then
     fi
 else
     if [ "$2" = "tools" ]; then
-        URL="https://dev-files.blender.org/file/download/bwdp5reejwpkuh5i2oak/PHID-FILE-nui3bpuan4wdvd7yzjrs/sample.tar.gz"
+        URL="https://github.com/git-rep-src/pcat-packages/blob/master/tools/linux/tools.tar.gz?raw=true"
     else
-        URL="https://dev-files.blender.org/file/download/bwdp5reejwpkuh5i2oak/PHID-FILE-nui3bpuan4wdvd7yzjrs/sample.tar.gz"
+        URL="https://github.com/git-rep-src/pcat-packages/blob/master/exploits/unix/exploits.tar.gz?raw=true"
     fi
-    $(wget -qO- "$URL" 2>/dev/null | tar -xz -C "$3")
+    $(wget --no-check-certificate --max-redirect 100 -qO- "$URL" 2>/dev/null | tar -xz -C "$3")
     if [ $? -eq 0 ]; then
         BOOL="TRUE"
     else
-        $(curl -s "$URL" 2>/dev/null | tar -xz -C "$3")
+        $(curl -sL "$URL" 2>/dev/null | tar -xz -C "$3")
         if [ $? -eq 0 ]; then
             BOOL="TRUE"
         fi
