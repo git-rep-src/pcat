@@ -151,7 +151,7 @@
 
 /* Pcat information for output, etc. */
 #define PCAT_NAME "Pcat"
-#define PCAT_URL "https://gitlab.com/git-rep/pcat"
+#define PCAT_URL "https://github.com/git-rep-src/pcat"
 #define PCAT_VERSION "0.1.0"
 
 #ifndef __GNUC__
