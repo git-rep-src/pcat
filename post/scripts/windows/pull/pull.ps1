@@ -34,18 +34,24 @@ if ($PSV -ne "" -and $PSV -ne $null -and $PSV -gt 2 -and $? -eq "True") {
     xml "OPEN" "PULL"
     if ($NAME -like "tools") {
         $URL="https://github.com/git-rep-src/pcat-packages/blob/master/tools/windows/tools.zip?raw=true"
-    } else {
+    } elseif ($NAME -like "exploits") {
         $URL="https://github.com/git-rep-src/pcat-packages/blob/master/exploits/windows/exploits.zip?raw=true"
     }
-    $(Invoke-WebRequest -UseBasicParsing -MaximumRedirection 100 -Uri $URL -OutFile $FILE)
-    if ($? -eq "True") {
-        $(unzip $FILE $DIR) 
+    if ($URL -ne "") {
+        $(Invoke-WebRequest -UseBasicParsing -MaximumRedirection 100 -Uri $URL -OutFile $FILE)
         if ($? -eq "True") {
-            xml "STATUS" "SUCCESS"
+            $(unzip $FILE $DIR) 
+            if ($? -eq "True") {
+                xml "STATUS" "SUCCESS"
+            } else {
+                xml "STATUS" "FAIL"
+            }
+            $(Remove-Item $FILE)
         } else {
             xml "STATUS" "FAIL"
         }
-        $(Remove-Item $FILE)
+    } else {
+        xml "STATUS" "FAIL"
     }
     xml "CLOSE" "PULL"
 }
