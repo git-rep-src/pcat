@@ -1,11 +1,11 @@
 # PCAT
 
-An extension of Ncat for pentesters: [video](https://streamable.com/oas5v)
+An extension of Ncat for pentesters: [video](https://sendvid.com/wfcvqr9g)
 
 It preserves all the features of Ncat and adds new ones, divided into two groups:
 
-* **Pre**: work in progress.
-* **Post**: enumeration, exploit manager and privilege escalation vector checking on Unix/Windows systems.
+Pre: work in progress.
+Post: enumeration, exploits manager and privilege escalation vector checking on Unix/Windows systems.
 
 ## INSTALLATION
 
@@ -104,6 +104,4 @@ Usage: post <option> <arguments>
 
   windows: cmd shell is mandatory
 ```
-Pcat is based on source code of [Ncat](https://github.com/nmap/nmap)
-
-Pcat use Linux exploits list of [Linux Exploit Suggester](https://github.com/mzet-/linux-exploit-suggester)
+Pcat is based on source code of [Ncat](https://github.com/nmap/nmap) and use Linux exploits list of [Linux Exploit Suggester](https://github.com/mzet-/linux-exploit-suggester).
