@@ -2,7 +2,7 @@
 
 An extension of Ncat for pentesters: [video](https://sendvid.com/wfcvqr9g)
 
-It preserves all the features of Ncat and adds new ones, divided into two groups:
+Pcat preserves all the features of Ncat and adds new ones, divided into two groups:
 
 * **pre**: work in progress.
 * **post**: enumeration, exploit/tool manager and privilege escalation vector checking on Unix/Windows systems.
