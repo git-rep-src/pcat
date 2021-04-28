@@ -5,7 +5,7 @@ An extension of Ncat for pentesters: [video](https://sendvid.com/wfcvqr9g)
 Pcat preserves all the features of Ncat and adds new ones, divided into two groups:
 
 * **pre**: work in progress.
-* **post**: enumeration, exploit/tool manager and privilege escalation vector checking on Unix/Windows systems.
+* **post**: enumeration, exploit/tools manager and privilege escalation vector checking on Unix/Windows systems.
 
 ## INSTALLATION
 
@@ -29,7 +29,7 @@ sudo make install
 
 ```shell
 $ ./pcat --help
-Pcat 0.1.0 ( https://gitlab.com/git-rep/pcat )
+Pcat 0.1.0 ( https://github.com/git-rep-src/pcat )
 Usage: pcat [options] [hostname] [port]
 
 Options taking a time assume seconds. Append 'ms' for milliseconds,
