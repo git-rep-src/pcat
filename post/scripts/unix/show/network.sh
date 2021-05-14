@@ -51,7 +51,7 @@ array\
 xml "OPEN" "DATA name='network' maxlen='7'"
 xml "OPEN" "PUBLIC"
 if [ "$1" = "bsd" ]; then
-    RET=$(fetch --no-verify-peer --no-verify-hostname -qo - https://ipinfo.io/json 2>/dev/null | tr "," "\n" | tr -d '{"}')
+    RET=$(fetch --no-verify-peer --no-verify-hostname -qo- https://ipinfo.io/json 2>/dev/null | tr "," "\n" | tr -d '{"}')
 else 
     RET=$(which wget 2>/dev/null)
     if [ $? -eq 0 ]; then
