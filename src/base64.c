@@ -171,6 +171,47 @@ static int b64enc_internal(const unsigned char *data, int len, char *dest)
     return (buf - dest);
 }
 
+static int b64dec_internal(const unsigned char *data, int len, unsigned char *dtable, char *dest)
+{
+    int pad = 0;
+    size_t n = 0;
+    char block[4];
+    char tempbuf;
+    char *buf = dest;
+
+    for (int i = 0; i < len; i++) {
+        tempbuf = dtable[data[i]];
+        if (tempbuf == 0x80)
+            continue;
+
+        if (data[i] == '=')
+            pad++;
+
+        block[n] = tempbuf;
+        n++;
+
+        if (n == 4) {
+            *buf++ = ((block[0] << 2) | (block[1] >> 4));
+            *buf++ = ((block[1] << 4) | (block[2] >> 2));
+            *buf++ = ((block[2] << 6) | block[3]);
+            n = 0;
+            if (pad) {
+                if (pad == 1)
+                    buf--;
+                else if (pad == 2)
+                    buf -= 2;
+                else {
+                    return 0;
+                }
+
+                break;
+            }
+        }
+    }
+
+    return (buf - dest);
+}
+
 /* Take in plain text and encode into base64. */
 char *b64enc(const unsigned char *data, int len)
 {
@@ -183,6 +224,38 @@ char *b64enc(const unsigned char *data, int len)
 
     /* Call internal function to base64 encode data */
     b64enc_internal(data, len, dest);
+
+    return (dest);
+}
+
+/* Take in base64 and decode into plain text. */
+char *b64dec(const unsigned char *data, int len, size_t *destlen)
+{
+    size_t n = 0;
+    unsigned char b64alpha[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    unsigned char dtable[256];
+    char *dest = NULL;
+
+    memset(dtable, 0x80, 256);
+    for (int i = 0; i < (sizeof(b64alpha) - 1); i++)
+        dtable[b64alpha[i]] = (unsigned char) i;
+    dtable['='] = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (dtable[data[i]] != 0x80)
+            n++;
+    }
+
+    if (!((n == 0) && (n % 4))) {
+        /* malloc enough space to do something useful */
+        dest = (char *) safe_malloc((n / 4) * 3);
+    
+        /* Call internal function to plain text decode data */
+        if ((*destlen = b64dec_internal(data, len, dtable, dest)) == 0) {
+            free(dest);
+            dest = NULL;
+        }
+    }
 
     return (dest);
 }

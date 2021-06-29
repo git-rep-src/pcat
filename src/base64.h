@@ -130,6 +130,9 @@
 #ifndef PCAT_BASE64_H
 #define PCAT_BASE64_H
 
+#include <stddef.h>
+
 char *b64enc(const unsigned char *data, int len);
+char *b64dec(const unsigned char *data, int len, size_t *destlen);
 
 #endif
