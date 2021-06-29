@@ -1,0 +1,37 @@
+$ProgressPreference = "SilentlyContinue"
+$OuputEncoding = [Text.UTF8Encoding]::UTF8
+$PSV = ([int]$PsVersionTable.PsVersion.Major) 
+$global:BUF = ""
+$RET = ""
+function xml()
+{
+    if ($args[0] -eq "OPEN") {
+        $global:BUF += "<" + $args[1] + ">"
+    } elseif ($args[0] -eq "CLOSE") {
+        $global:BUF += "</" + $args[1] + ">"
+    } else {
+        $global:BUF += "<" + $args[0] + ">" + $args[1] + "</" + $args[0] + ">"
+    }
+}
+if ($PSV -ne "" -and $PSV -ne $null -and $PSV -gt 2 -and $? -eq "True") {
+    xml "OPEN" "SOCKETS"
+    $RET = (Get-NetTCPConnection | Format-Table -Property LocalAddress, LocalPort, RemoteAddress, RemotePort, State | Out-String)
+    if ($RET -ne "" -and $RET -ne $null -and $? -eq "True") {
+        xml "TCP" $RET
+    } else {
+        xml "TCP" "N/A"
+    }
+    $RET = (Get-NetUDPEndpoint | Format-Table -Property LocalAddress, LocalPort | Out-String)
+    if ($RET -ne "" -and $RET -ne $null -and $? -eq "True") {
+        xml "UDP" $RET
+    } else {
+        xml "UDP" "N/A"
+    }
+    xml "CLOSE" "SOCKETS"
+} else {
+    xml "OPEN" "NULL"
+    xml "NONE" "Powershell is not installed or version is not compatible"
+    xml "CLOSE" "NULL"
+}
+xml "CLOSE" "DATA"
+echo "$BUF [CMD-EOF]"

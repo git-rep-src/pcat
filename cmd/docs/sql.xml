@@ -1,0 +1,70 @@
+<DATA>
+    <MYSQL>
+        <TITLE>LOGIN</TITLE>
+        <CONTENT>mysql &#8211;h &#60;HOST&#62; &#8211;u &#60;USER&#62; &#8211;p</CONTENT>
+        <TITLE>SHOW/DBS</TITLE>
+        <CONTENT>show databases;</CONTENT>
+        <TITLE>CREATE/DB</TITLE>
+        <CONTENT>create database &#60;DB&#62;;</CONTENT>
+        <TITLE>USE/DB</TITLE>
+        <CONTENT>use &#60;DB&#62;;</CONTENT>
+        <TITLE>DUMP/DB</TITLE>
+        <CONTENT>mysqldump &#8211;u &#60;USER&#62; &#8211;p&#60;PASSWORD&#62; &#8211;&#8211;databases &#60;DB&#62; &#62; &#60;FILE&#62;</CONTENT>
+        <TITLE>DUMP/DBS</TITLE>
+        <CONTENT>mysqldump &#8211;u &#60;USER&#62; &#8211;p&#60;PASSWORD&#62; &#8211;&#8211;opt &#62; &#60;FILE&#62;</CONTENT>
+        <TITLE>DELETE/DB</TITLE>
+        <CONTENT>drop database &#60;DB&#62;;</CONTENT>
+        <TITLE>SHOW/TABLES</TITLE>
+        <CONTENT>show tables;</CONTENT>
+        <TITLE>CREATE/TABLE</TITLE>
+        <CONTENT>create table &#60;TABLE&#62;(id int(50) primary key auto_increment not null, name varchar(10), email varchar(20) default &#39;TEST&#39;);</CONTENT>
+        <TITLE>SHOW/TABLE</TITLE>
+        <CONTENT>select * from &#60;TABLE&#62;;</CONTENT>
+        <TITLE>DUMP/TABLE</TITLE>
+        <CONTENT>mysqldump &#8211;c &#8211;u &#60;USER&#62; &#8211;p&#60;PASSWORD&#62; &#60;DB&#62; &#60;TABLE&#62; &#62; &#60;FILE&#62;</CONTENT>
+        <TITLE>DELETE/TABLE</TITLE>
+        <CONTENT>drop table &#60;TABLE&#62;;</CONTENT>
+        <TITLE>SHOW/COLUMNS</TITLE>
+        <CONTENT>show columns from &#60;TABLE&#62;;</CONTENT>
+        <TITLE>CREATE/COLUMN</TITLE>
+        <CONTENT>alter table &#60;TABLE&#62; add column &#60;COLUMN&#62; varchar (20);</CONTENT>
+        <TITLE>DELETE/COLUMN</TITLE>
+        <CONTENT>alter table &#60;TABLE&#62; drop column &#60;COLUMN&#62;;</CONTENT>
+        <TITLE>SHOW/ROW</TITLE>
+        <CONTENT>select * from &#60;TABLE&#62; where &#60;FIELD&#62; = &#34;TEST&#34;;</CONTENT>
+        <TITLE>DELETE/ROW</TITLE>
+        <CONTENT>delete from &#60;TABLE&#62; where &#60;FIELD&#62; = &#34;TEST&#34;;</CONTENT>
+    </MYSQL>
+    <PSQL>
+        <TITLE>LOGIN</TITLE>
+        <CONTENT>psql &#8211;h &#60;HOST&#62; &#8211;U &#60;USER&#62; &#60;DB&#62;</CONTENT>
+        <TITLE>SHOW/DBS</TITLE>
+        <CONTENT>\l</CONTENT>
+        <TITLE>CREATE/DB</TITLE>
+        <CONTENT>\c &#60;DB&#62;</CONTENT>
+        <TITLE>USE/DB</TITLE>
+        <CONTENT>\c &#60;DB&#62;</CONTENT>
+        <TITLE>DUMP/DB</TITLE>
+        <CONTENT>pg_dump &#8211;W &#8211;h &#60;HOST&#62; &#8211;U &#60;USER&#62; &#60;DB&#62; &#62; &#60;FILE&#62;</CONTENT>
+        <TITLE>DELETE/DB</TITLE>
+        <CONTENT>drop database &#60;DB&#62;;</CONTENT>
+        <TITLE>SHOW/TABLES</TITLE>
+        <CONTENT>\dt</CONTENT>
+        <TITLE>CREATE/TABLE</TITLE>
+        <CONTENT>create table &#60;TABLE&#62;(id int primary key not null, name text, email char(20));</CONTENT>
+        <TITLE>SHOW/TABLE</TITLE>
+        <CONTENT>\d &#60;TABLE&#62;</CONTENT>
+        <TITLE>DELETE/TABLE</TITLE>
+        <CONTENT>drop table &#60;TABLE&#62;;</CONTENT>
+        <TITLE>SHOW/COLUMNS</TITLE>
+        <CONTENT>select * from &#60;TABLE&#62; where false;</CONTENT>
+        <TITLE>CREATE/COLUMN</TITLE>
+        <CONTENT>alter table &#60;TABLE&#62; add column &#60;COLUMN&#62; varchar(20);</CONTENT>
+        <TITLE>DELETE/COLUMN</TITLE>
+        <CONTENT>alter table &#60;TABLE&#62; drop column &#60;COLUMN&#62; restrict;</CONTENT>
+        <TITLE>SHOW/ROW</TITLE>
+        <CONTENT>select * from &#60;TABLE&#62; where &#60;FIELD&#62; = &#34;TEST&#34;;</CONTENT>
+        <TITLE>DELETE/ROW</TITLE>
+        <CONTENT>delete from &#60;TABLE&#62; where &#60;FIELD&#62; = &#34;TEST&#34;;</CONTENT>
+    </PSQL>
+</DATA>
