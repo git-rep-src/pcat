@@ -74,10 +74,10 @@ SHTOOL = ./shtool
 # usual directory structure into a different tree.
 DESTDIR =
 
-POSTDIRS = $(pkgdatadir)/post/docs $(pkgdatadir)/post/exploits $(pkgdatadir)/post/scripts/unix/show $(pkgdatadir)/post/scripts/unix/run $(pkgdatadir)/post/scripts/unix/pull $(pkgdatadir)/post/scripts/windows/show $(pkgdatadir)/post/scripts/windows/run $(pkgdatadir)/post/scripts/windows/pull
+CMDDIRS = $(pkgdatadir)/cmd/docs $(pkgdatadir)/cmd/exploits $(pkgdatadir)/cmd/scripts/unix/do $(pkgdatadir)/cmd/scripts/unix/show $(pkgdatadir)/cmd/scripts/unix/get $(pkgdatadir)/cmd/scripts/unix/pull $(pkgdatadir)/cmd/scripts/windows/do $(pkgdatadir)/cmd/scripts/windows/show $(pkgdatadir)/cmd/scripts/windows/get $(pkgdatadir)/cmd/scripts/windows/pull
 
-SRCS = src/pcat_main.c src/pcat_connect.c src/pcat_core.c src/pcat_posix.c src/pcat_listen.c src/pcat_proxy.c src/pcat_ssl.c src/base64.c src/http.c src/util.c src/sys_wrap.c src/common.c src/file.c src/conv.c src/set.c src/post/post_input.c src/post/post_show.c src/post/post_run.c src/post/post_pull.c src/post/post_doc.c src/post/post_output.c src/post/post_parse.c src/post/post_cache.c 
-OBJS = src/pcat_main.o src/pcat_connect.o src/pcat_core.o src/pcat_posix.o src/pcat_listen.o src/pcat_proxy.o src/pcat_ssl.o src/base64.o src/http.o src/util.o src/sys_wrap.o src/common.o src/file.o src/conv.o src/set.o src/post/post_input.o src/post/post_show.o src/post/post_run.o src/post/post_pull.o src/post/post_doc.o src/post/post_output.o src/post/post_parse.o src/post/post_cache.o 
+SRCS = src/pcat_main.c src/pcat_connect.c src/pcat_core.c src/pcat_posix.c src/pcat_listen.c src/pcat_proxy.c src/pcat_ssl.c src/base64.c src/http.c src/util.c src/sys_wrap.c src/unicode.c src/file.c src/cmd/cmd_input.c src/cmd/cmd_load.c src/cmd/cmd_doc.c src/cmd/cmd_output.c src/cmd/cmd_parse.c src/cmd/cmd_cache.c
+OBJS = src/pcat_main.o src/pcat_connect.o src/pcat_core.o src/pcat_posix.o src/pcat_listen.o src/pcat_proxy.o src/pcat_ssl.o src/base64.o src/http.o src/util.o src/sys_wrap.o src/unicode.o src/file.o src/cmd/cmd_input.o src/cmd/cmd_load.o src/cmd/cmd_doc.o src/cmd/cmd_output.o src/cmd/cmd_parse.o src/cmd/cmd_cache.o
 DATAFILES =
 
 ifneq ($(NOLUA),yes)
@@ -183,15 +183,17 @@ install: $(TARGET)
 		$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(pkgdatadir); \
 		$(INSTALL) -c -m 644 $(DATAFILES) $(DESTDIR)$(pkgdatadir)/; \
 	fi
-	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(POSTDIRS);
-	$(INSTALL) -c -m 644 post/docs/* $(DESTDIR)$(pkgdatadir)/post/docs/;
-	$(INSTALL) -c -m 644 post/scripts/unix/show/* $(DESTDIR)$(pkgdatadir)/post/scripts/unix/show/;
-	$(INSTALL) -c -m 644 post/scripts/unix/run/* $(DESTDIR)$(pkgdatadir)/post/scripts/unix/run/;
-	$(INSTALL) -c -m 644 post/scripts/unix/pull/* $(DESTDIR)$(pkgdatadir)/post/scripts/unix/pull/;
-	$(INSTALL) -c -m 644 post/scripts/windows/show/* $(DESTDIR)$(pkgdatadir)/post/scripts/windows/show/;
-	$(INSTALL) -c -m 644 post/scripts/windows/run/* $(DESTDIR)$(pkgdatadir)/post/scripts/windows/run/;
-	$(INSTALL) -c -m 644 post/scripts/windows/pull/* $(DESTDIR)$(pkgdatadir)/post/scripts/windows/pull/;
-	$(INSTALL) -c -m 644 post/exploits/* $(DESTDIR)$(pkgdatadir)/post/exploits/;
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(CMDDIRS);
+	$(INSTALL) -c -m 644 cmd/docs/* $(DESTDIR)$(pkgdatadir)/cmd/docs/;
+	$(INSTALL) -c -m 644 cmd/exploits/* $(DESTDIR)$(pkgdatadir)/cmd/exploits/;
+	$(INSTALL) -c -m 644 cmd/scripts/unix/do/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/do/;
+	$(INSTALL) -c -m 644 cmd/scripts/unix/show/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/show/;
+	$(INSTALL) -c -m 644 cmd/scripts/unix/get/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/get/;
+	$(INSTALL) -c -m 644 cmd/scripts/unix/pull/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/pull/;
+	$(INSTALL) -c -m 644 cmd/scripts/windows/do/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/do/;
+	$(INSTALL) -c -m 644 cmd/scripts/windows/show/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/show/;
+	$(INSTALL) -c -m 644 cmd/scripts/windows/get/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/get/;
+	$(INSTALL) -c -m 644 cmd/scripts/windows/pull/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/pull/;
 	$(INSTALL) -c -m 644 docs/$(TARGET).1 $(DESTDIR)$(mandir)/man1/$(TARGET).1
 
 uninstall:
