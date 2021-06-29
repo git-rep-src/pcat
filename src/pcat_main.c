@@ -642,12 +642,10 @@ int main(int argc, char *argv[])
             else if (strcmp(long_options[option_index].name, "remote-os") == 0) {
                 if (o.remoteos != NULL)
                     bye("Only one of --remote-os is allowed.");
-                if ((strcmp(optarg, "bsd") == 0) ||
-                    (strcmp(optarg, "linux") == 0) ||
-                    (strcmp(optarg, "windows") == 0))
+                if (set_remoteos(optarg))
                     o.remoteos = optarg;
                 else
-                    bye("Invalid remote operating system option.");
+                    bye("Options are 'bsd', 'linux', 'windows'");
             }
             break;
         case 'h':
@@ -717,6 +715,20 @@ int main(int argc, char *argv[])
 #endif
 "      --remote-os            Specify remote operating system (\"bsd\", \"linux\", \"windows\")\n"
 "      --version              Display Pcat's version information and exit\n"
+"\n"
+"SESSION:\n"
+"\n"
+"Usage: :<option> <arguments>\n"
+"\n"
+"  set  os [bsd|linux|windows]                      Set remote operating system\n"
+"  do   tty                                         Spawn tty shell\n"
+"  show [system|users|process|network|pe|exploits]  Show information\n"
+"  cp   <file> <file>                               Copy remote file to local file\n"
+"  get  [tools|exploits] <path>                     Download package to remote path\n"
+"  doc  [iptables|ssh|sql|pe]                       Show cheatsheet\n"
+"  help                                             Show help\n"
+"\n"
+"  On Windows a cmd shell is mandatory.\n"
 "\n"
 "See the pcat(1) manpage for full options, descriptions and usage examples\n"
             );
@@ -1097,15 +1109,12 @@ static int pcat_connect_mode(void)
     if (o.keepopen)
         bye("Invalid option combination: `--keep-open' with connect.");
 
-    if (o.cmdexec && o.remoteos != NULL)
-        bye("Invalid option combination: --exec/--sh-exec/--lua-exec and --remote-os.");
-    
-    if (o.broker && o.remoteos != NULL)
-        bye("Invalid option combination: --broker and --remote-os.");
-    
+    if (o.sendonly && o.remoteos != NULL)
+        bye("Invalid option combination: --send-only and --remote-os.");
+
     if (o.recvonly && o.remoteos != NULL)
         bye("Invalid option combination: --recv-only and --remote-os.");
-
+    
     return pcat_connect();
 }
 
@@ -1121,18 +1130,18 @@ static int pcat_listen_mode(void)
     if (o.proxytype != NULL && o.telnet)
         bye("Invalid option combination: --telnet has no effect with --proxy-type.");
 
-    if (o.cmdexec && o.remoteos != NULL)
-        bye("Invalid option combination: --exec/--sh-exec/--lua-exec and --remote-os.");
+    if (o.sendonly && o.remoteos != NULL)
+        bye("Invalid option combination: --send-only and --remote-os.");
+
+    if (o.recvonly && o.remoteos != NULL)
+        bye("Invalid option combination: --recv-only and --remote-os.");
+
+    if (o.chat && o.remoteos != NULL)
+        bye("Invalid option combination: --chat and --remote-os.");
     
     if (o.broker && o.remoteos != NULL)
         bye("Invalid option combination: --broker and --remote-os.");
     
-    if (o.recvonly && o.remoteos != NULL)
-        bye("Invalid option combination: --recv-only and --remote-os.");
-    
-    if (o.sendonly && o.remoteos != NULL)
-        bye("Invalid option combination: --send-only and --remote-os.");
-
     if (o.conn_limit != -1 && !(o.keepopen || o.broker))
         loguser("Warning: Maximum connections ignored, since it does not take "
                 "effect without -k or --broker.\n");
