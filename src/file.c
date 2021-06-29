@@ -1,33 +1,22 @@
 #include "pcat.h"
 
-/* Pre/post: is file path lengh less that maximum allowed?. */
-int is_maxpath(size_t pathlen)
+/* Read file from disk. */
+char *read_file(const char *filepath)
 {
-    if (pathlen > 4096)
-        return 0;
-
-    return 1;
-}
-
-/* Pre/post: read file from disk. */
-char *read_file(char *filepath, int *len)
-{
-    long nbytes;
+    long len;
     FILE *fp;
     char *ret = NULL;
 
     if ((fp = fopen(filepath, "r")) != NULL) {
         fseek(fp, 0L, SEEK_END);
 
-        if ((nbytes = ftell(fp)) != -1) {
+        if ((len = ftell(fp)) != -1) {
             fseek(fp, 0L, SEEK_SET);
 
-            ret = (char *) safe_malloc(nbytes + 1);
+            ret = (char *) safe_malloc(len + 1);
+            memset(ret, 0, (len + 1));
 
-            if (fread(ret, sizeof(char), nbytes, fp) == nbytes) {
-                if (len != NULL)
-                    *len = nbytes;
-            } else { 
+            if (fread(ret, sizeof(char), len, fp) != len) {
                 free(ret);
                 ret = NULL;
             }
@@ -35,25 +24,19 @@ char *read_file(char *filepath, int *len)
  
         fclose(fp);
     }
-    
-    if (ret != NULL)
-        ret[nbytes] = '\0';
 
     return ret;
 }
 
-/* Pre/post: write file to disk. */
-int write_file(const char *src, const char *filepath)
+/* Write file to disk. */
+int write_file(const char *filepath, const char *src, size_t len)
 {
-    size_t nbytes;
     FILE *fp;
     
     if ((fp = fopen(filepath, "w")) == NULL)
         return 0;
-   
-    nbytes = (strlen(src) + 1);
 
-    if (fwrite(src, sizeof(char), nbytes, fp) != nbytes)
+    if (fwrite(src, sizeof(char), len, fp) != len)
         return 0;
 
     fclose(fp);

@@ -2,9 +2,8 @@
 #define FILE_H
 
 #include <stddef.h>
-
-int is_maxpath(size_t pathlen);
-char *read_file(char *filepath, int *len);
-int write_file(const char *src, const char *filepath);
+    
+char *read_file(const char *filepath);
+int write_file(const char *filepath, const char *src, size_t len);
 
 #endif
