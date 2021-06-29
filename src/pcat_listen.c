@@ -128,9 +128,8 @@
 /* $Id$ */
 
 #include "pcat.h"
-#include "set.h"
-#include "post/post_input.h"
-#include "post/post_output.h"
+#include "cmd/cmd_input.h"
+#include "cmd/cmd_output.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -209,10 +208,10 @@ static unsigned int conn_inc = 0;
 static volatile unsigned int conn_dec = 0;
 static volatile sig_atomic_t conn_dec_changed;
 
-/* Is post active?. */
-static int is_post = 0;
-/* Buffer to append socket data. */
-static char *postbuf = NULL;
+/* Command have output?. */
+static int cmdout = 0;
+/* Command buffer. */
+static char *cmdbuf = NULL;
 
 static void decrease_conn_count(void)
 {
@@ -596,11 +595,6 @@ static void post_handle_connection(struct fdinfo sinfo)
 #ifdef HAVE_OPENSSL
             }
 #endif
-            if (o.remoteos)
-                set_remoteos(o.remoteos);
-            
-            set_datadir();
-            set_cachedir(inet_socktop(&sinfo.remoteaddr));
         }
         FD_SET(sinfo.fd, &master_broadcastfds);
         if (add_fdinfo(&broadcast_fdlist, &sinfo) < 0)
@@ -616,7 +610,7 @@ static void post_handle_connection(struct fdinfo sinfo)
 int read_stdin(void)
 {
     int nbytes;
-    int tempnbytes;
+    int cmdnbytes;
     char buf[DEFAULT_TCP_BUF_LEN];
     char *tempbuf = NULL;
 
@@ -638,27 +632,15 @@ int read_stdin(void)
         return nbytes;
     }
 
-    /* Is post called? If so then send stdin data to it. */
-    char c[nbytes];
-    strncpy(c, buf, nbytes);
-    char *name = strtok(c, " \n\r");
+    /* Is a command? If so then process it. */
+    if (is_cmd(buf, nbytes)) //{
+        cmd_input(buf, nbytes, &cmdbuf, &cmdnbytes, &cmdout);
 
-    if (strcmp(name, "post") == 0) {
-        if ((postbuf = post_input((const char *) buf, nbytes, &is_post)) != NULL) {
-            tempnbytes = strlen(postbuf);
-        } else {
-            strcpy(buf, "\n");
-            tempnbytes = 1;
-        }
-    } else {
-        tempnbytes = nbytes;
-    }
-   
     if (o.crlf) {
-        if (postbuf != NULL)
-            fix_line_endings(postbuf, &tempnbytes, &tempbuf, &crlf_state);
+        if (cmdbuf != NULL)
+            fix_line_endings(cmdbuf, &cmdnbytes, &tempbuf, &crlf_state);
         else
-            fix_line_endings((char *) buf, &tempnbytes, &tempbuf, &crlf_state);
+            fix_line_endings((char *) buf, &nbytes, &tempbuf, &crlf_state);
     }
 
     if (o.linedelay)
@@ -666,18 +648,21 @@ int read_stdin(void)
 
     /* Write to everything in the broadcast set. */
     if (tempbuf != NULL) {
-        pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, tempbuf, tempnbytes);
+        if (cmdbuf != NULL)
+            pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, tempbuf, cmdnbytes);
+        else
+            pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, tempbuf, nbytes);
         free(tempbuf);
         tempbuf = NULL;
-    } else if (postbuf != NULL) {
-        pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, postbuf, tempnbytes);
+    } else if (cmdbuf != NULL) {
+        pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, cmdbuf, cmdnbytes);
     } else {
-        pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, buf, tempnbytes);
+        pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, buf, nbytes);
     }
 
-    if (postbuf != NULL) {
-        free(postbuf);
-        postbuf = NULL;
+    if (cmdbuf != NULL) {
+        free(cmdbuf);
+        cmdbuf = NULL;
     }
     
     return nbytes;
@@ -722,31 +707,12 @@ int read_socket(int recv_fd)
             return n;
         }
         else {
-            /* Is post active? If so then send socket data to it
-               else write socket data to stdout. */ 
-            if (is_post) {
-                if (postbuf == NULL) {
-                    postbuf = (char *) safe_malloc(n + 1);
-                    postbuf[0] = '\0';
-                } else {
-                    postbuf = (char *) safe_realloc(postbuf, (strlen(postbuf) + n + 1));
-                }
-
-                strncat(postbuf, buf, n);
-
-                /* Is end-of-stream?. */
-                if (strstr(postbuf, "[POST-EOS]") != NULL) {
-                    post_output(postbuf);
-                    
-                    free(postbuf);
-                    postbuf = NULL;
-                    
-                    is_post = 0;
-                }
-            } else {
+            /* Is a command output? If so then process it. */
+            if (cmdout)
+                cmd_output(buf, n, &cmdbuf, &cmdout);
+            else
                 /* Write socket data to stdout. */
                 Write(STDOUT_FILENO, buf, n);
-            }
 
             nbytes += n;
         }
