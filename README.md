@@ -2,10 +2,7 @@
 
 An extension of Ncat for pentesters: [video](https://sendvid.com/wfcvqr9g)
 
-Pcat preserves all the features of Ncat and adds new ones, divided into two groups:
-
-* **pre**: work in progress.
-* **post**: enumeration, exploit/tools manager and privilege escalation vector checking on Unix/Windows systems.
+Pcat preserves all the features of Ncat and adds new ones: enumeration, exploit/tools manager and privilege escalation vector checking on Unix/Windows systems.
 
 ## INSTALLATION
 
@@ -28,7 +25,6 @@ sudo make install
 ##### GENERAL
 
 ```shell
-$ ./pcat --help
 Pcat 0.1.0 ( https://github.com/git-rep-src/pcat )
 Usage: pcat [options] [hostname] [port]
 
@@ -86,22 +82,21 @@ Options taking a time assume seconds. Append 'ms' for milliseconds,
       --remote-os            Specify remote operating system ("bsd", "linux", "windows")
       --version              Display Pcat's version information and exit
 
+SESSION:
+
+Usage: :<option> <arguments>
+
+  set  os [bsd|linux|windows]                      Set remote operating system
+  do   tty                                         Spawn tty shell
+  show [system|users|process|network|pe|exploits]  Show information
+  cp   <file> <file>                               Copy remote file to local file
+  get  [tools|exploits] <path>                     Download package to remote path
+  doc  [iptables|ssh|sql|pe]                       Show cheatsheet
+  help                                             Show help
+
+  On Windows a cmd shell is mandatory.
+
 See the pcat(1) manpage for full options, descriptions and usage examples
 ```
-##### SESSION
 
-```shell
-post help
-
-Usage: post <option> <arguments>
-
-  set  os [bsd|linux|windows]                        set remote operating system
-  show [system|users|process|network|pe|exploits]    show information
-  run  tty                                           spawn tty shell
-  pull [tools|exploits] <dir>                        download and install package
-  doc  [iptables|ssh|sql|pe]                         show cheatsheet
-  help                                               show help
-
-  windows: cmd shell is mandatory
-```
 Pcat is based on source code of [Ncat](https://github.com/nmap/nmap) and use Linux exploits list of [Linux Exploit Suggester](https://github.com/mzet-/linux-exploit-suggester).
