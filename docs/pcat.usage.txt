@@ -55,4 +55,18 @@ Options taking a time assume seconds. Append 'ms' for milliseconds,
       --remote-os            Specify remote operating system ("bsd", "linux", "windows")
       --version              Display Pcat's version information and exit
 
+SESSION:
+
+Usage: :<option> <arguments>
+
+  set  os [bsd|linux|windows]                      Set remote operating system
+  do   tty                                         Spawn tty shell
+  show [system|users|process|network|pe|exploits]  Show information
+  cp   <file> <file>                               Copy remote file to local file
+  get  [tools|exploits] <path>                     Download package to remote path
+  doc  [iptables|ssh|sql|pe]                       Show cheatsheet
+  help                                             Show help
+
+  On Windows a cmd shell is mandatory.
+
 See the pcat(1) manpage for full options, descriptions and usage examples

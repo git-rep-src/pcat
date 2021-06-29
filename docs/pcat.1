@@ -38,7 +38,7 @@ Among Ncat\*(Aqs vast number of features there is the ability to chain Ncats tog
 .RS 4
 .\}
 .nf
-Pcat 0\&.1\&.0 ( https://gitlab\&.com/git\-rep/pcat )
+Pcat 0\&.1\&.0 ( https://github\&.com/git\-rep\-src/pcat )
 Usage: pcat [options] [hostname] [port]
 
 Options taking a time assume seconds\&. Append \*(Aqms\*(Aq for milliseconds,
@@ -93,6 +93,20 @@ Options taking a time assume seconds\&. Append \*(Aqms\*(Aq for milliseconds,
       \-\-ssl\-alpn             ALPN protocol list to use\&.
       \-\-remote\-os            Specify remote operating system ("bsd", "linux", "windows")
       \-\-version              Display Pcat\*(Aqs version information and exit
+
+SESSION:
+
+Usage: :<option> <arguments>
+
+  set  os [bsd|linux|windows]                      Set remote operating system
+  do   tty                                         Spawn tty shell
+  show [system|users|process|network|pe|exploits]  Show information
+  cp   <file> <file>                               Copy remote file to local file
+  get  [tools|exploits] <path>                     Download package to remote path
+  doc  [iptables|ssh|sql|pe]                       Show cheatsheet
+  help                                             Show help
+
+  On Windows a cmd shell is mandatory.
 
 See the pcat(1) manpage for full options, descriptions and usage examples
 .fi
@@ -532,6 +546,57 @@ windows\&.
 .RS 4
 Displays the Pcat version number and exits\&.
 .RE
+.SH "SESSION OPTIONS"
+.PP
+\fBset\fR (Specify variable)
+.RS 4
+\fBos\fR specify remote operating system. The currently available are
+bsd,
+linux, and
+windows\&.
+.RE
+.PP
+\fBdo\fR (Run)
+.RS 4
+\fBtty\fR try to spawn a tty shell. Unix only\&.
+.RE
+.PP
+\fBshow\fR (Show remote system information)
+.RS 4
+The currently available are
+system,
+users,
+process,
+network,
+pe, and
+exploits\&.
+.RE
+.PP
+\fBcp file file\fR (Copy file)
+.RS 4
+Copy file from remote to local system\&.
+.RE
+.PP
+\fBget package path\fR (Download package)
+.RS 4
+Download package to remote path. The currently available are
+tools (static binaries), and
+exploits (source code)\&.
+.RE
+.PP
+\fBdoc\fR (Show cheatsheet)
+.RS 4
+The currently available are
+iptables,
+ssh,
+sql, and
+pe\&.
+.RE
+.PP
+\fBhelp\fR (Help screen)
+.RS 4
+Displays a short help screen with common options and parameters, and then exits\&.
+.RE
 .SH "UNIX DOMAIN SOCKETS"
 .PP
 The
@@ -757,5 +822,5 @@ OpenSSL cryptography toolkit
 .IP " 7." 4
 Pcat
 .RS 4
-\%https://gitlab.com/git-rep/pcat
+\%https://github.com/git-rep-src/pcat
 .RE
