@@ -146,7 +146,11 @@
 #include <openssl/ssl.h>
 #endif
 
-/* add/multiply unsigned values safely */
+#include <libxml/parser.h>
+
+extern const char cmdhelp[]; 
+
+ /* add/multiply unsigned values safely */
 size_t sadd(size_t, size_t);
 size_t smul(size_t, size_t);
 
@@ -231,5 +235,16 @@ struct fdinfo *get_fdinfo(const fd_list_t *, int);
 int fix_line_endings(char *src, int *len, char **dst, int *state);
 
 unsigned char *next_protos_parse(size_t *outlen, const char *in);
+
+/* Is mandatory variables setted?. */
+int has_settings(const char *cmd, const char *opt, const char *arg0);
+/* Is path length less to maximum allowed?. */
+int is_pathmax(const char *name, size_t pathlen);
+/* Is XML?. */
+int is_xml(const char *src);
+/* Is XML leaf?. */
+int is_xml_leaf(xmlNode *node);
+/* Trim leading white spaces. */
+char *trim_leading(char *src);
 
 #endif

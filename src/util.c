@@ -155,6 +155,16 @@
 #include <linux/vm_sockets.h>
 #endif
 
+const char cmdhelp[] = 
+"\n"
+":set  os [bsd|linux|windows]                      set remote operating system\n"
+":do   tty                                         spawn tty shell\n"
+":show [system|users|process|network|pe|exploits]  show information\n"
+":cp   <file> <file>                               copy remote file to local file\n"
+":get  [tools|exploits] <path>                     download package to remote path\n"
+":doc  [iptables|ssh|sql|pe]                       show cheatsheet\n"
+":help                                             show help\n";
+
 /* safely add 2 size_t */
 size_t sadd(size_t l, size_t r)
 {
@@ -822,4 +832,78 @@ unsigned char *next_protos_parse(size_t *outlen, const char *in)
 
     *outlen = len + 1;
     return out;
+}
+
+/* Is mandatory variables setted?. */
+int has_settings(const char *cmd, const char *opt, const char *arg0)
+{
+    if (strcmp(cmd, "pre") == 0) {
+        return 0;
+    } else {
+        if ((remoteos[0] == '\0') && (strcmp(opt, "doc") != 0)) {
+            loguser("Remote operating system is not set. Try ':help'.\n");
+            return 0;
+        }
+
+        if (datadir[0] == '\0') {
+            if (!set_datadir())
+                return 0;
+        }
+        
+        if (pcatdir[0] == '\0') {
+            if (!set_pcatdir()) 
+                return 0;
+        }
+
+        if (cachedir[0] == '\0') {
+            if (!set_cachedir()) 
+                 return 0;
+        }
+    }
+
+    return 1;
+}
+
+/* Is path length less to maximum allowed?. */
+int is_pathmax(const char *name, size_t pathlen)
+{
+    if (pathlen >= PATH_MAX) {
+        loguser("%s path is greater than PATH_MAX.\n", name);
+        return 0;
+    }
+
+    return 1;
+}
+
+/* Is XML?. */
+int is_xml(const char *src)
+{
+    if (strstr(src, "<DATA") == NULL)
+        return 0;
+
+    return 1;
+}
+
+/* Is XML leaf?. */
+int is_xml_leaf(xmlNode *node)
+{
+    xmlNode *child = node->children;
+
+    while (child) {
+        if (child->type == XML_ELEMENT_NODE)
+            return 0;
+        
+        child = child->next;
+    } 
+
+    return 1;
+}
+
+/* Trim leading white spaces. */
+char *trim_leading(char *src)
+{
+    while(isspace(*src))
+        src++;
+
+    return src;
 }
