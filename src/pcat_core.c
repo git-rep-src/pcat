@@ -145,6 +145,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <time.h>
+#include <pwd.h>
 
 /* Only two for now because we might have to listen on IPV4 and IPV6 */
 union sockaddr_u listenaddrs[NUM_LISTEN_ADDRS];
@@ -160,6 +161,15 @@ struct options o;
 
 /* The time the program was started, for exit statistics in connect mode. */
 struct timeval start_time;
+
+/* Remote operating system name. */
+char remoteos[16] = {0};
+/* Path to data directory. */
+char datadir[PATH_MAX] = {0};
+/* Path to pcat directory. */
+char pcatdir[PATH_MAX] = {0};
+/* Path to cache directory. */
+char cachedir[PATH_MAX] = {0};
 
 /* Initializes global options to their default values. */
 void options_init(void)
@@ -698,4 +708,112 @@ void setup_environment(struct fdinfo *info)
             setenv_portable("PCAT_PROTO", "UDP");
             break;
     }
+}
+
+/* Set remote operating system. */
+int set_remoteos(const char *remote_os)
+{
+    if ((strcmp(remote_os, "bsd") == 0) ||
+        (strcmp(remote_os, "linux") == 0) ||
+        (strcmp(remote_os, "windows") == 0)) {
+        strcpy(remoteos, remote_os);
+    } else {
+        loguser("Invalid remote operating system option.\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+/* Set data directory. */
+int set_datadir()
+{
+    struct stat st;
+
+    if ((stat("cmd", &st) == 0) && S_ISDIR(st.st_mode)) {
+        strcpy(datadir, "cmd");
+    } else { 
+        if (!is_pathmax("data", (strlen(PCAT_DATADIR) + 8)))
+            return 0;
+
+        sprintf(datadir, "%s%s", PCAT_DATADIR, "/cmd");
+    }
+
+    return 1;
+}
+
+/* Set pcat directory. */
+int set_pcatdir()
+{
+    char dirpath[PATH_MAX];
+    uid_t uid;
+    struct passwd *pw;
+    struct stat st;
+
+    uid = getuid();
+
+    if ((pw = getpwuid(uid)) == NULL) {
+        loguser("Can't create pcat directory. Try reinstalling Pcat.\n");
+        return 0;
+    }
+
+    if (!is_pathmax("pcat", (strlen(pw->pw_dir) + 8)))
+        return 0;
+
+    sprintf(dirpath, "%s%s", pw->pw_dir, "/.pcat");
+
+    if (!((stat(dirpath, &st) == 0) && S_ISDIR(st.st_mode))) {
+        if (mkdir(dirpath, 0700) != 0) {
+            loguser("Can't create pcat directory. Try reinstalling Pcat.\n");
+            return 0;
+        }
+    }
+
+    strcpy(pcatdir, dirpath);
+
+    return 1;
+}
+
+/* Set cache directory. */
+int set_cachedir()
+{
+    char dir[NAME_MAX];
+    char dirpath[PATH_MAX];
+    struct stat st;
+    time_t rawtime;
+    struct tm *timeinfo;
+
+    if (!is_pathmax("cache", (strlen(pcatdir) + 8)))
+        return 0;
+        
+    sprintf(dirpath, "%s%s", pcatdir, "/cache");
+
+    if (!((stat(dirpath, &st) == 0) && S_ISDIR(st.st_mode))) {
+        if (mkdir(dirpath, 0700) != 0) {
+            loguser("Can't create cache directory. Try reinstalling Pcat.\n");
+            return 0;
+        }
+    }
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    sprintf(dir, "%s-%02d.%02d.%02d-%02d:%02d", o.target, timeinfo->tm_mday, timeinfo->tm_mon,
+                                                1900 + timeinfo->tm_year, timeinfo->tm_hour, timeinfo->tm_min);
+
+    if (!is_pathmax("cache", (strlen(dirpath) + strlen(dir) + 2)))
+        return 0;
+    
+    sprintf(dirpath + strlen(dirpath), "%s%s", "/", dir);
+
+    if (!((stat(dirpath, &st) == 0) && S_ISDIR(st.st_mode))) {
+        if (mkdir(dirpath, 0700) != 0) {
+            loguser("Can't create cache directory. Try reinstalling Pcat.\n");
+            return 0;
+        }
+    }
+                
+    strcpy(cachedir, dirpath);
+
+    return 1;
 }
