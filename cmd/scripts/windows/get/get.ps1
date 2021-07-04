@@ -14,7 +14,6 @@ $PSV = ([int]$PsVersionTable.PsVersion.Major)
 $FILE = $DIR + "/file.zip"
 $URL = ""
 $global:BUF = ""
-$RET = ""
 function xml()
 {
     if ($args[0] -eq "OPEN") {
