@@ -1,6 +1,6 @@
 # PCAT
 
-An extension of Ncat for pentesters: [video](https://sendvid.com/wfcvqr9g)
+An extension of Ncat for pentesters.
 
 Pcat preserves all the features of Ncat and adds new ones: enumeration, exploit/tools manager and privilege escalation vector checking on Unix/Windows systems.
 
@@ -98,5 +98,59 @@ Usage: :<option> <arguments>
 
 See the pcat(1) manpage for full options, descriptions and usage examples
 ```
+##### SESSION
 
+```shell
+:show system
+
+HOST
+    NAME........host
+    OS..........GNU/Linux
+    KERNEL......Linux 5.11.9-arch1-1
+    ARCH........x86_64
+    DISTRO......Arch Linux 
+    INIT........Systemd
+    RUNLEVEL....graphical.target
+    VBOX........No
+    DOCKER......No
+    LXC.........No
+    UPTIME......up 17 minutes
+
+STORAGE
+    NAME      FSTYPE      FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINT   SIZE OWNER GROUP MODE
+    sda                                                                                              238.5G root  disk  brw-rw----
+    ├─sda1    ext2        1.0         03m9d2xc-b6d6-493a-8ce7-e6634513dac1   44.9M    64% /boot        150M root  disk  brw-rw----
+    ├─sda2    crypto_LUKS 1           0dme8m2s-7b98-4776-a6ce-e26d51fa0152                              50G root  disk  brw-rw----
+    │ └─mroot ext4        1.0         49cmns3h-f0b9-4b61-b62d-fa6e61096c96    8.3G    80% /             50G root  disk  brw-rw----
+    ├─sda3    crypto_LUKS 1           00f836sn-0355-4eb4-baf8-dc0df7a064ef                              50G root  disk  brw-rw----
+    ├─sda4                                                                                               1K root  disk  brw-rw----
+    └─sda5    crypto_LUKS 1           86653dcb-e813-432b-5dg7-edd3b1bf95d4                           138.3G root  disk  brw-rw----
+
+DEV
+    GCC........./usr/bin/gcc
+    PYTHON....../usr/bin/python
+                /usr/bin/python2
+                /usr/bin/python2.7
+                /usr/bin/python3
+    PERL......../usr/bin/perl
+    RUBY......../usr/bin/ruby
+
+TOOLS
+    WGET......../usr/bin/wget
+    CURL......../usr/bin/curl
+    GIT........./usr/bin/git
+    FTP........./usr/bin/ftp
+    TELNET....../usr/bin/telnet
+    SSH........./usr/bin/ssh
+                /usr/bin/sshd
+    NETCAT....../usr/bin/nc
+                /usr/bin/ncat
+                /usr/bin/netcat
+    SOCAT......./usr/bin/socat
+    TCPDUMP...../usr/bin/tcpdump
+    NMAP......../usr/bin/nmap
+    TAR........./usr/bin/tar
+    VIM........./usr/bin/vim
+    VI........../usr/bin/vi
+```
 Pcat is based on source code of [Ncat](https://github.com/nmap/nmap) and use Linux exploits list of [Linux Exploit Suggester](https://github.com/mzet-/linux-exploit-suggester).
