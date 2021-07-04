@@ -75,7 +75,7 @@ static char *script(const char *filepath)
 }
 
 /* Build command. */
-static void cmd(const char *buf, const char *arg0, const char *arg1, char **ret)
+static void cmd(const char *buf, const char *arg0, const char *arg1, char **ret, int reset)
 {
     static size_t size = 0;
     static size_t offset = 0;
@@ -110,7 +110,7 @@ static void cmd(const char *buf, const char *arg0, const char *arg1, char **ret)
     else 
         strbuf_sprintf(ret, &size, &offset, "echo %s | %s | /bin/sh -s %s %s %s\n", buf, decoder, remoteos, a0, a1);
     
-    if (headers[2] /*|| si es la fila .2*/) {
+    if (headers[2] || reset) {
         size = 0;
         offset = 0;
     }
@@ -133,7 +133,7 @@ static char *response(char *filepath, const char *arg0, const char *arg1)
             if (headers[1]) {
                 ret = buf;
             } else {
-                cmd(buf, arg0, arg1, &ret); 
+                cmd(buf, arg0, arg1, &ret, i); 
                
                 free(buf);
                 buf = NULL;
@@ -175,8 +175,8 @@ char *cmd_load(const char *opt, const char *arg0, const char *arg1, int *cmdout)
         else
             sprintf(filepath, "%s%s%s%s%s%s", datadir, "/scripts/unix/", dir, "/", file, ".sh");
         
-        if (has_cache(arg0)) {
-            cmd_cache(arg0, NULL, "r");
+        if (has_cache(file)) {
+            cmd_cache(file, NULL, "r");
         } else {
             if ((ret = response(filepath, arg0, arg1)) != NULL) {
                 if (((headers[0] == 1) && (strcmp(remoteos, "windows") == 0)) ||
