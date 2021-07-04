@@ -50,7 +50,10 @@ void cmd_input(char *src, int nbytes, char **cmdbuf, int *cmdnbytes, int *cmdout
 
     if (*cmdbuf == NULL) {
         *cmdbuf = (char *) safe_malloc(2);
-        strcpy(*cmdbuf, "\n");
+        if (strcmp(remoteos, "windows") == 0)
+            strcpy(*cmdbuf, "\r");
+        else
+            strcpy(*cmdbuf, "\n");
         *cmdout = 0;
     }
 
