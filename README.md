@@ -1,6 +1,8 @@
 # PCAT
 
-An extension of Ncat for pentesters. It preserves all the features of Ncat and adds new ones: enumeration, exploit/tools manager and privilege escalation vector checking on Unix/Windows systems.
+An extension of Ncat for pentesters.
+
+Pcat preserves all the features of Ncat and adds new ones: enumeration, exploit/tools manager and privilege escalation vector checking on Unix/Windows systems.
 
 ## INSTALLATION
 
