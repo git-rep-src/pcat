@@ -97,7 +97,7 @@ post set  bsd|linux|windows                      set post on remote system memor
           exploits DIR                           install exploit sources package on DIR
      help                                        show help
 ```
-##### SESSION EXAMPLE
+##### EXAMPLE
 
 ```shell
 post show system
