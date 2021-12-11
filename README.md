@@ -96,6 +96,8 @@ post set  bsd|linux|windows                      set post on remote system memor
      put  tools DIR                              install static binaries package on DIR
           exploits DIR                           install exploit sources package on DIR
      help                                        show help
+
+     Windows need a powershell reverse shell.
 ```
 ##### EXAMPLE
 
