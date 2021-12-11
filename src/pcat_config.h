@@ -128,15 +128,10 @@
 #ifndef PCAT_CONFIG_H
 #define PCAT_CONFIG_H
 
-/* This is a wrapper that selects config.h or config_win.h depending on whether
-   we're using Autoconf or a static Windows configuration file. */
-
 #if HAVE_CONFIG_H
 #include "../config.h"
-#elif WIN32
-#include "../config_win.h"
 #else
-#error "No config.h, and not WIN32"
+#error "No config.h"
 #endif
 
 #endif

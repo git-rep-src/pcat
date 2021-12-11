@@ -1,9 +1,9 @@
 #include "pcat.h"
 
 /* Read file from disk. */
-char *read_file(const char *filepath)
+char *read_file(const char *filepath, size_t *nbytes)
 {
-    long len;
+    size_t len = 0;
     FILE *fp;
     char *ret = NULL;
 
@@ -24,6 +24,9 @@ char *read_file(const char *filepath)
  
         fclose(fp);
     }
+
+    if (nbytes != NULL)
+        *nbytes = len;
 
     return ret;
 }

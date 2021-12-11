@@ -149,6 +149,8 @@
 #include "pcat_proxy.h"
 #include "pcat_ssl.h"
 
+#include <limits.h>
+
 /* Pcat information for output, etc. */
 #define PCAT_NAME "Pcat"
 #define PCAT_URL "https://github.com/git-rep-src/pcat"
@@ -287,6 +289,15 @@ struct socks5_request {
 /* Dummy WNOHANG for Windows */
 #ifndef WNOHANG
 #define WNOHANG 0
+#endif
+
+/* Maximum length of file name. */
+#ifndef NAME_MAX
+#define NAME_MAX 256
+#endif
+/* Maximum length of file path. */
+#ifndef PATH_MAX
+#define PATH_MAX 4096
 #endif
 
 #endif

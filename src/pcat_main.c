@@ -368,7 +368,6 @@ int main(int argc, char *argv[])
         {"ssl-ciphers",     optional_argument,  NULL,         0},
         {"ssl-alpn",        optional_argument,  NULL,         0},
 #endif
-        {"remote-os",       required_argument,  NULL,         0},
         {0, 0, 0, 0}
     };
 
@@ -639,14 +638,6 @@ int main(int argc, char *argv[])
                 o.af = AF_VSOCK;
             }
 #endif
-            else if (strcmp(long_options[option_index].name, "remote-os") == 0) {
-                if (o.remoteos != NULL)
-                    bye("Only one of --remote-os is allowed.");
-                if (set_remoteos(optarg))
-                    o.remoteos = optarg;
-                else
-                    bye("Options are 'bsd', 'linux', 'windows'");
-            }
             break;
         case 'h':
             printf("%s %s ( %s )\n", PCAT_NAME, PCAT_VERSION, PCAT_URL);
@@ -713,24 +704,19 @@ int main(int argc, char *argv[])
 "      --ssl-servername       Request distinct server name (SNI)\n"
 "      --ssl-alpn             ALPN protocol list to use\n"
 #endif
-"      --remote-os            Specify remote operating system (\"bsd\", \"linux\", \"windows\")\n"
 "      --version              Display Pcat's version information and exit\n"
 "\n"
-"SESSION:\n"
+"Session:\n"
 "\n"
-"Usage: :<option> <arguments>\n"
+" post set  bsd|linux|windows                      set post on remote system memory\n"
+"      show system|users|process|network|pe|cve    show information\n"
+"      push FILE FILE                              copy local FILE to remote FILE (windows <= 4MB)\n"
+"      pull FILE FILE                              copy remote FILE to local FILE\n"
+"      put  tools DIR                              install static binaries package on DIR\n"
+"           exploits DIR                           install exploit sources package on DIR\n"
+"      help                                        show help\n"
 "\n"
-"  set  os [bsd|linux|windows]                      Set remote operating system\n"
-"  do   tty                                         Spawn tty shell\n"
-"  show [system|users|process|network|pe|exploits]  Show information\n"
-"  cp   <file> <file>                               Copy remote file to local file\n"
-"  get  [tools|exploits] <path>                     Download package to remote path\n"
-"  doc  [iptables|ssh|sql|pe]                       Show cheatsheet\n"
-"  help                                             Show help\n"
-"\n"
-"  On Windows a cmd shell is mandatory.\n"
-"\n"
-"See the pcat(1) manpage for full options, descriptions and usage examples\n"
+"      Windows need a powershell reverse shell.\n"
             );
             exit(EXIT_SUCCESS);
         case '?':
@@ -1108,12 +1094,6 @@ static int pcat_connect_mode(void)
 
     if (o.keepopen)
         bye("Invalid option combination: `--keep-open' with connect.");
-
-    if (o.sendonly && o.remoteos != NULL)
-        bye("Invalid option combination: --send-only and --remote-os.");
-
-    if (o.recvonly && o.remoteos != NULL)
-        bye("Invalid option combination: --recv-only and --remote-os.");
     
     return pcat_connect();
 }
@@ -1130,18 +1110,6 @@ static int pcat_listen_mode(void)
     if (o.proxytype != NULL && o.telnet)
         bye("Invalid option combination: --telnet has no effect with --proxy-type.");
 
-    if (o.sendonly && o.remoteos != NULL)
-        bye("Invalid option combination: --send-only and --remote-os.");
-
-    if (o.recvonly && o.remoteos != NULL)
-        bye("Invalid option combination: --recv-only and --remote-os.");
-
-    if (o.chat && o.remoteos != NULL)
-        bye("Invalid option combination: --chat and --remote-os.");
-    
-    if (o.broker && o.remoteos != NULL)
-        bye("Invalid option combination: --broker and --remote-os.");
-    
     if (o.conn_limit != -1 && !(o.keepopen || o.broker))
         loguser("Warning: Maximum connections ignored, since it does not take "
                 "effect without -k or --broker.\n");

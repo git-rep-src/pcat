@@ -128,8 +128,8 @@
 /* $Id$ */
 
 #include "pcat.h"
-#include "cmd/cmd_input.h"
-#include "cmd/cmd_output.h"
+#include "post/post_input.h"
+#include "post/post_output.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -208,10 +208,10 @@ static unsigned int conn_inc = 0;
 static volatile unsigned int conn_dec = 0;
 static volatile sig_atomic_t conn_dec_changed;
 
-/* Command have output?. */
-static int cmdout = 0;
-/* Command buffer. */
-static char *cmdbuf = NULL;
+/* Post have output?. */
+static int pout = 0;
+/* Post buffer. */
+static char *pbuf = NULL;
 
 static void decrease_conn_count(void)
 {
@@ -602,6 +602,9 @@ static void post_handle_connection(struct fdinfo sinfo)
 
         if (o.chat)
             chat_announce_connect(sinfo.fd, &sinfo.remoteaddr);
+
+        /* Set post directory. */
+        set_postdir();
     }
 }
 
@@ -610,7 +613,7 @@ static void post_handle_connection(struct fdinfo sinfo)
 int read_stdin(void)
 {
     int nbytes;
-    int cmdnbytes;
+    int pbytes;
     char buf[DEFAULT_TCP_BUF_LEN];
     char *tempbuf = NULL;
 
@@ -632,13 +635,13 @@ int read_stdin(void)
         return nbytes;
     }
 
-    /* Is a command? If so then process it. */
-    if (is_cmd(buf, nbytes)) //{
-        cmd_input(buf, nbytes, &cmdbuf, &cmdnbytes, &cmdout);
+    /* Is post command? If so then process it. */
+    if ((pbuf = post_input(buf, nbytes, &pout)) != NULL)
+        pbytes = strlen(pbuf);
 
     if (o.crlf) {
-        if (cmdbuf != NULL)
-            fix_line_endings(cmdbuf, &cmdnbytes, &tempbuf, &crlf_state);
+        if (pbuf != NULL)
+            fix_line_endings(pbuf, &pbytes, &tempbuf, &crlf_state);
         else
             fix_line_endings((char *) buf, &nbytes, &tempbuf, &crlf_state);
     }
@@ -648,21 +651,30 @@ int read_stdin(void)
 
     /* Write to everything in the broadcast set. */
     if (tempbuf != NULL) {
-        if (cmdbuf != NULL)
-            pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, tempbuf, cmdnbytes);
-        else
+        if (pbuf != NULL) {
+            for (int n = 0; n < pbytes; n += (DEFAULT_TCP_BUF_LEN - 1)) {
+                memset(buf, 0, DEFAULT_TCP_BUF_LEN);
+                strncpy(buf, &tempbuf[n], (DEFAULT_TCP_BUF_LEN - 1));
+                pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, buf, strlen(buf));
+            }
+        } else {
             pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, tempbuf, nbytes);
+        }
         free(tempbuf);
         tempbuf = NULL;
-    } else if (cmdbuf != NULL) {
-        pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, cmdbuf, cmdnbytes);
+    } else if (pbuf != NULL) {
+        for (int n = 0; n < pbytes; n += (DEFAULT_TCP_BUF_LEN - 1)) {
+            memset(buf, 0, DEFAULT_TCP_BUF_LEN);
+            strncpy(buf, &pbuf[n], (DEFAULT_TCP_BUF_LEN - 1));
+            pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, buf, strlen(buf));
+        }
     } else {
         pcat_broadcast(&master_broadcastfds, &broadcast_fdlist, buf, nbytes);
     }
 
-    if (cmdbuf != NULL) {
-        free(cmdbuf);
-        cmdbuf = NULL;
+    if (pbuf != NULL) {
+        free(pbuf);
+        pbuf = NULL;
     }
     
     return nbytes;
@@ -707,9 +719,9 @@ int read_socket(int recv_fd)
             return n;
         }
         else {
-            /* Is a command output? If so then process it. */
-            if (cmdout)
-                cmd_output(buf, n, &cmdbuf, &cmdout);
+            /* Is post output? If so then process it else write socket data to stdout. */
+            if (pout)
+                post_output(buf, n, &pbuf, &pout);
             else
                 /* Write socket data to stdout. */
                 Write(STDOUT_FILENO, buf, n);

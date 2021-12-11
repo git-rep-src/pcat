@@ -1,23 +1,16 @@
-Building Pcat
-=============
+libssl  (optional)
+liblua  (optional/included)
+libpcap (included)
 
-Pcat add libxml2 as dependecy to Ncat build process.
+BSD:
+./configure
+gmake
+gmake install
 
-On UNIX systems, ideally, you should just be able to do:
-
+Linux:
 ./configure
 make
-
-After building is successful, to install:
 make install
 
-On BSD systems use gmake instead of make.
-
-For instructions on how to build Ncat for Microsoft Windows or for far more
-in-depth compilation, installation, and removal notes, read the Nmap Install
-Guide at https://nmap.org/install/.
-
-For instructions on how to build Ncat Portable for Microsoft Windows, read
-the how-to available at https://secwiki.org/w/Nmap/Ncat_Portable.
-
-
+Windows: 
+Work in progress.

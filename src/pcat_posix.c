@@ -330,7 +330,6 @@ loop_end:
  * "pcat\ experiment -l -k" will be parsed as the following tokens:
  * "pcat experiment", "-l", "-k".
  * "pcat\\ -l -k" will be parsed as "pcat\", "-l", "-k"
- * See the test program, test/test-cmdline-split to see additional cases.
  */
 char **cmdline_split(const char *cmdexec)
 {

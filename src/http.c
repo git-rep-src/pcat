@@ -275,9 +275,6 @@ char *socket_buffer_remainder(struct socket_buffer *buf, size_t *len)
     return buf->p;
 }
 
-/* The URI functions have a test program in test/test-uri.c. Run the test after
-   making any changes and add tests for any new functions. */
-
 void uri_init(struct uri *uri)
 {
     uri->scheme = NULL;

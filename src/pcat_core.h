@@ -135,17 +135,6 @@
 #include "util.h"
 #include "sockaddr_u.h"
 
-#include <limits.h>
-
-/* Maximum length of file name. */
-#ifndef NAME_MAX
-#define NAME_MAX 256
-#endif
-/* Maximum length of file path. */
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
-
 /* Maximum size of the srcaddrs array. In this case two because we can only have
    a IPV4 INADDR_ANY and a IPV6 in6addr_any at most or a user defined address */
 #define NUM_LISTEN_ADDRS 2
@@ -237,8 +226,6 @@ struct options {
     char* sslservername;
     char *sslalpn;
     int zerobyte;
-
-    char *remoteos;
 };
 
 extern struct options o;
@@ -246,14 +233,10 @@ extern struct options o;
 /* The time the program was started, for exit statistics in connect mode. */
 extern struct timeval start_time;
 
-/* Remote operating system name. */
-extern char remoteos[16];
-/* Path to data directory. */
-extern char datadir[PATH_MAX];
-/* Path to pcat directory. */
-extern char pcatdir[PATH_MAX];
-/* Path to cache directory. */
-extern char cachedir[PATH_MAX];
+/* Post directory. */
+extern char postdir[PATH_MAX];
+/* Remote platform. */
+extern char platform[8];
 
 /* Initializes global options to their default values. */
 void options_init(void);
@@ -334,13 +317,9 @@ extern int getaddrfamily(const char *addr);
 extern int setenv_portable(const char *name, const char *value);
 extern void setup_environment(struct fdinfo *fdinfo);
 
-/* Set remote operating system. */
-int set_remoteos(const char *remote_os);
-/* Set data directory. */
-int set_datadir();
-/* Set pcat directory. */
-int set_pcatdir();
-/* Set cache directory. */
-int set_cachedir();
+/* Set post directory. */
+void set_postdir();
+/* Set remote platform. */
+int set_platform(const char *os);
 
 #endif

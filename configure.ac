@@ -315,9 +315,5 @@ AC_SUBST(OPENSSL_LIBS)
 
 AC_CONFIG_FILES(Makefile)
 AC_OUTPUT
-# PCAT ASCII ART
-if test -f docs/pcat-ascii-art.txt; then
-	cat docs/pcat-ascii-art.txt
-fi
 
 echo "Configuration complete."

@@ -42,9 +42,9 @@ srcdir = @srcdir@
 
 CC = @CC@
 CPPFLAGS = @CPPFLAGS@
-CFLAGS = @CFLAGS@ `xml2-config --cflags`
+CFLAGS = @CFLAGS@
 LDFLAGS = @LDFLAGS@
-LIBS = @LIBS@ `xml2-config --libs`
+LIBS = @LIBS@
 DEFS = @DEFS@ -DPCAT_DATADIR="\"$(pkgdatadir)\""
 # With GCC, add extra security checks to source code.
 DEFS += -D_FORTIFY_SOURCE=2
@@ -74,10 +74,10 @@ SHTOOL = ./shtool
 # usual directory structure into a different tree.
 DESTDIR =
 
-CMDDIRS = $(pkgdatadir)/cmd/docs $(pkgdatadir)/cmd/exploits $(pkgdatadir)/cmd/scripts/unix/do $(pkgdatadir)/cmd/scripts/unix/show $(pkgdatadir)/cmd/scripts/unix/cp $(pkgdatadir)/cmd/scripts/unix/get $(pkgdatadir)/cmd/scripts/windows/do $(pkgdatadir)/cmd/scripts/windows/show $(pkgdatadir)/cmd/scripts/windows/cp $(pkgdatadir)/cmd/scripts/windows/get
+POSTDIRS = $(pkgdatadir)/post/packages/bsd $(pkgdatadir)/post/packages/linux $(pkgdatadir)/post/packages/windows $(pkgdatadir)/post/scripts/bsd $(pkgdatadir)/post/scripts/linux $(pkgdatadir)/post/scripts/windows
 
-SRCS = src/pcat_main.c src/pcat_connect.c src/pcat_core.c src/pcat_posix.c src/pcat_listen.c src/pcat_proxy.c src/pcat_ssl.c src/base64.c src/http.c src/util.c src/sys_wrap.c src/unicode.c src/file.c src/cmd/cmd_input.c src/cmd/cmd_load.c src/cmd/cmd_doc.c src/cmd/cmd_output.c src/cmd/cmd_parse.c src/cmd/cmd_cache.c
-OBJS = src/pcat_main.o src/pcat_connect.o src/pcat_core.o src/pcat_posix.o src/pcat_listen.o src/pcat_proxy.o src/pcat_ssl.o src/base64.o src/http.o src/util.o src/sys_wrap.o src/unicode.o src/file.o src/cmd/cmd_input.o src/cmd/cmd_load.o src/cmd/cmd_doc.o src/cmd/cmd_output.o src/cmd/cmd_parse.o src/cmd/cmd_cache.o
+SRCS = src/pcat_main.c src/pcat_connect.c src/pcat_core.c src/pcat_posix.c src/pcat_listen.c src/pcat_proxy.c src/pcat_ssl.c src/base64.c src/http.c src/util.c src/sys_wrap.c src/file.c src/post/post_input.c src/post/post_output.c src/post/post_set.c src/post/post_push.c src/post/post_pull.c src/post/post_put.c
+OBJS = src/pcat_main.o src/pcat_connect.o src/pcat_core.o src/pcat_posix.o src/pcat_listen.o src/pcat_proxy.o src/pcat_ssl.o src/base64.o src/http.o src/util.o src/sys_wrap.o src/file.o src/post/post_input.o src/post/post_output.o src/post/post_set.o src/post/post_push.o src/post/post_pull.o src/post/post_put.o
 DATAFILES =
 
 ifneq ($(NOLUA),yes)
@@ -105,11 +105,6 @@ TARGET = pcat
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = $(CONFIG_HEADER) config.cache config.log config.status
-
-TEST_PROGS = test/addrset test/test-uri test/test-cmdline-split
-ifneq ($(HAVE_OPENSSL),)
-TEST_PROGS += test/test-wildcard
-endif
 
 all: $(TARGET)
 
@@ -160,52 +155,37 @@ config.h:
 		        $(SHELL) ./config.status; \
 	fi
 
-test/addrset: test/addrset.o src/pcat_core.o src/sys_wrap.o src/util.o src/pcat_posix.o $(LUA_OBJS) @LUA_DEPENDS@
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
-
-test/test-uri: test/test-uri.o src/base64.o src/http.o src/pcat_core.o src/sys_wrap.o src/util.o src/pcat_posix.o $(LUA_OBJS) @LUA_DEPENDS@
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
-
-test/test-cmdline-split: test/test-cmdline-split.o src/pcat_posix.o src/pcat_core.o src/sys_wrap.o src/util.o $(LUA_OBJS) @LUA_DEPENDS@
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
-
-test/test-wildcard: test/test-wildcard.o src/pcat_core.o src/pcat_ssl.o src/sys_wrap.o src/util.o src/pcat_posix.o $(LUA_OBJS) @LUA_DEPENDS@
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(NBASE_LIBS) $(NSOCK_LIBS) $(PCAP_LIBS) $(LUA_LIBS) $(OPENSSL_LIBS) $(LIBS)
-
 .PHONY: uninstall all clean distclean build-nbase build-nsock build-pcap build-lua
 
 install: $(TARGET)
 	@echo Installing Pcat;
-	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir) $(DESTDIR)$(mandir)/man1
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir) 
 	$(INSTALL) -c -m 755 pcat $(DESTDIR)$(bindir)/pcat
 	$(STRIP) -x $(DESTDIR)$(bindir)/pcat
 	if [ -n "$(DATAFILES)" ]; then \
 		$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(pkgdatadir); \
 		$(INSTALL) -c -m 644 $(DATAFILES) $(DESTDIR)$(pkgdatadir)/; \
 	fi
-	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(CMDDIRS);
-	$(INSTALL) -c -m 644 cmd/docs/* $(DESTDIR)$(pkgdatadir)/cmd/docs/;
-	$(INSTALL) -c -m 644 cmd/exploits/* $(DESTDIR)$(pkgdatadir)/cmd/exploits/;
-	$(INSTALL) -c -m 644 cmd/scripts/unix/do/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/do/;
-	$(INSTALL) -c -m 644 cmd/scripts/unix/show/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/show/;
-	$(INSTALL) -c -m 644 cmd/scripts/unix/cp/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/cp/;
-	$(INSTALL) -c -m 644 cmd/scripts/unix/get/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/unix/get/;
-	$(INSTALL) -c -m 644 cmd/scripts/windows/do/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/do/;
-	$(INSTALL) -c -m 644 cmd/scripts/windows/show/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/show/;
-	$(INSTALL) -c -m 644 cmd/scripts/windows/cp/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/cp/;
-	$(INSTALL) -c -m 644 cmd/scripts/windows/get/* $(DESTDIR)$(pkgdatadir)/cmd/scripts/windows/get/;
-	$(INSTALL) -c -m 644 docs/$(TARGET).1 $(DESTDIR)$(mandir)/man1/$(TARGET).1
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(POSTDIRS);
+	$(INSTALL) -c -m 644 post/packages/bsd/* $(DESTDIR)$(pkgdatadir)/post/packages/bsd/;
+	$(INSTALL) -c -m 644 post/packages/linux/* $(DESTDIR)$(pkgdatadir)/post/packages/linux/;
+	$(INSTALL) -c -m 644 post/packages/windows/* $(DESTDIR)$(pkgdatadir)/post/packages/windows/;
+	$(INSTALL) -c -m 644 post/scripts/bsd/* $(DESTDIR)$(pkgdatadir)/post/scripts/bsd/;
+	$(INSTALL) -c -m 644 post/scripts/linux/* $(DESTDIR)$(pkgdatadir)/post/scripts/linux/;
+	$(INSTALL) -c -m 644 post/scripts/windows/* $(DESTDIR)$(pkgdatadir)/post/scripts/windows/;
 
 uninstall:
 	@echo Uninstalling Pcat;
 	$(RM) -f $(DESTDIR)$(bindir)/$(TARGET)
-	$(RM) -f $(DESTDIR)$(mandir)/man1/$(TARGET).1
 	$(RM) -rf $(DESTDIR)$(pkgdatadir)/
 
 clean-pcat:
-	$(RM) -f src/*.o test/*.o $(TARGET) $(TEST_PROGS)
+	$(RM) -f src/*.o $(TARGET)
 
-clean: clean-pcat clean-nbase clean-nsock @PCAP_CLEAN@ @LUA_CLEAN@
+clean-post:
+	$(RM) -f src/post/*.o $(TARGET)
+
+clean: clean-pcat clean-post clean-nbase clean-nsock @PCAP_CLEAN@ @LUA_CLEAN@
 
 clean-nbase:
 	-cd $(LIBNBASEDIR) && $(MAKE) clean
@@ -233,14 +213,6 @@ distclean-lua:
 
 distclean: clean distclean-nbase distclean-nsock @PCAP_DIST_CLEAN@ @LUA_DIST_CLEAN@
 	-rm -f Makefile makefile.dep $(CONFIG_CLEAN_FILES)
-
-TESTS = ./test-addrset.sh ./test-cmdline-split ./test-uri
-ifneq ($(HAVE_OPENSSL),)
-TESTS += ./test-wildcard
-endif
-
-check: $(TARGET) $(TEST_PROGS)
-	cd test && ($(addsuffix &&,$(TESTS)) echo "All tests passed.")
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

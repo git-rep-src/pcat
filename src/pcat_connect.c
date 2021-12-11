@@ -135,8 +135,8 @@
 
 #include "nbase.h"
 #include "http.h"
-#include "cmd/cmd_input.h"
-#include "cmd/cmd_output.h"
+#include "post/post_input.h"
+#include "post/post_output.h"
 
 #ifndef WIN32
 #include <unistd.h>
@@ -174,10 +174,10 @@ static struct conn_state cs = {
     0
 };
 
-/* Command have output?. */
-static int cmdout = 0;
-/* Command buffer. */
-static char *cmdbuf = NULL;
+/* Post have output?. */
+static int pout = 0;
+/* Post buffer. */
+static char *pbuf = NULL;
 
 static void try_nsock_connect(nsock_pool nsp, struct sockaddr_list *conn_addr);
 static void connect_handler(nsock_pool nsp, nsock_event evt, void *data);
@@ -1334,6 +1334,9 @@ static void post_connect(nsock_pool nsp, nsock_iod iod)
     zmem(&peer, sizeof(peer.storage));
     nsock_iod_get_communication_info(cs.sock_nsi, NULL, NULL, NULL,
                                      &peer.sockaddr, sizeof(peer.storage));
+
+    /* Set post directory. */
+    set_postdir();
 }
 
 static void read_stdin_handler(nsock_pool nsp, nsock_event evt, void *data)
@@ -1342,7 +1345,7 @@ static void read_stdin_handler(nsock_pool nsp, nsock_event evt, void *data)
     enum nse_type type = nse_type(evt);
     char *buf, *tempbuf = NULL;
     int nbytes;
-    int cmdnbytes;
+    int pbytes;
 
     pcat_assert(type == NSE_TYPE_READ);
 
@@ -1368,41 +1371,41 @@ static void read_stdin_handler(nsock_pool nsp, nsock_event evt, void *data)
     /* Read from stdin. */
     buf = nse_readbuf(evt, &nbytes);
 
-    /* Is a command? If so then process it. */
-    if (is_cmd(buf, nbytes)) 
-        cmd_input(buf, nbytes, &cmdbuf, &cmdnbytes, &cmdout);
+    /* Is post command? If so then process it. */
+    if ((pbuf = post_input(buf, nbytes, &pout)) != NULL)
+        pbytes = strlen(pbuf);
 
     if (o.linedelay)
         pcat_delay_timer(o.linedelay);
 
     if (o.crlf) {
-        if (cmdbuf != NULL)
-            fix_line_endings(cmdbuf, &cmdnbytes, &tempbuf, &cs.crlf_state);
+        if (pbuf != NULL)
+            fix_line_endings(pbuf, &pbytes, &tempbuf, &cs.crlf_state);
         else
             fix_line_endings((char *) buf, &nbytes, &tempbuf, &cs.crlf_state);
     }
 
     if (tempbuf != NULL) {
-        if (cmdbuf != NULL) {
-            nsock_write(nsp, cs.sock_nsi, write_socket_handler, -1, NULL, tempbuf, cmdnbytes);
-            pcat_log_send(tempbuf, cmdnbytes);
+        if (pbuf != NULL) {
+            nsock_write(nsp, cs.sock_nsi, write_socket_handler, -1, NULL, tempbuf, pbytes);
+            pcat_log_send(tempbuf, pbytes);
         } else {
             nsock_write(nsp, cs.sock_nsi, write_socket_handler, -1, NULL, tempbuf, nbytes);
             pcat_log_send(tempbuf, nbytes);
         }
         free(tempbuf);
         tempbuf = NULL;
-    } else if (cmdbuf != NULL) {
-        nsock_write(nsp, cs.sock_nsi, write_socket_handler, -1, NULL, cmdbuf, cmdnbytes);
-        pcat_log_send(cmdbuf, cmdnbytes);
+    } else if (pbuf != NULL) {
+        nsock_write(nsp, cs.sock_nsi, write_socket_handler, -1, NULL, pbuf, pbytes);
+        pcat_log_send(pbuf, pbytes);
     } else {
         nsock_write(nsp, cs.sock_nsi, write_socket_handler, -1, NULL, buf, nbytes);
         pcat_log_send(buf, nbytes);
     }
 
-    if (cmdbuf != NULL) {
-        free(cmdbuf);
-        cmdbuf = NULL;
+    if (pbuf != NULL) {
+        free(pbuf);
+        pbuf = NULL;
     }
     
     refresh_idle_timer(nsp);
@@ -1445,9 +1448,9 @@ static void read_socket_handler(nsock_pool nsp, nsock_event evt, void *data)
     if (o.linedelay)
         pcat_delay_timer(o.linedelay);
 
-    /* Is a command output? If so then process it. */
-    if (cmdout) {
-        cmd_output(buf, nbytes, &cmdbuf, &cmdout);
+    /* Is post output? If so then process it else write socket data to stdout. */
+    if (pout) {
+        post_output(buf, nbytes, &pbuf, &pout);
     } else {
         if (o.telnet)
             dotelnet(nsock_iod_get_sd(nse_iod(evt)), (unsigned char *) buf, nbytes);
